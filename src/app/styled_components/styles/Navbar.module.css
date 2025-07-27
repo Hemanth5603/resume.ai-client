@@ -1,0 +1,136 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1.25rem;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.left .logo {
+    font-size: 2em;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 700;
+    color: #1f2937;
+    text-decoration: none;
+}
+
+.link {
+    text-align: left;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    margin: 0 1rem;
+    font-size: 1em;
+    font-weight: 500;
+    color: #000000;
+    text-decoration: none;
+}
+
+.link:hover {
+    color: #ef4444;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.loginButton {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: white;
+    color: black;
+    font-weight: 500;
+    font-size: 1em;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.loginButton:hover {
+    color: #ef4444;
+}
+
+
+.signupButton {
+    background-color: #ef4444;
+    color: white;
+    font-weight: 500;
+    font-size: 1em;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.signupButton:hover {
+    background-color: #dc2626;
+}
+
+.profileWrapper {
+    position: relative;
+}
+
+.profileButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 2px solid #ddd;
+}
+
+.dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+    padding: 0.5rem 0;
+    z-index: 999;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.dropdown a,
+.dropdown button {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    color: #374151;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.dropdown a:hover,
+.dropdown button:hover {
+    background-color: #f3f4f6;
+}
+
+@media (max-width: 640px) {
+  .center {
+    display: none;
+  }
+
+  .navbar {
+    padding: 1rem;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+}
