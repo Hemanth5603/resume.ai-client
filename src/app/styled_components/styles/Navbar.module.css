@@ -101,6 +101,7 @@
     min-width: 160px;
     padding: 0.5rem 0;
     z-index: 999;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .dropdown a,

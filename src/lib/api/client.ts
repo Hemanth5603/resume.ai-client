@@ -1,22 +1,18 @@
-import Cookies from "js-cookie"
+import { useAuth } from "@clerk/clerk-react"
+import { useUser } from "@clerk/nextjs"
 
 class ApiClient{
     async getToken() {
-        const accessToken = Cookies.get("access_token")
-        if (!accessToken) {
+        const {isSignedIn} = useUser()
+        const {getToken} = useAuth()
+        const token = await getToken({template: "default"})
+        if (!isSignedIn) {
             window.location.href = "auth/login"
             return
         }
-        const accessTokenExpiryTime = new Date(Cookies.get("access_token_expiry")??"")
-        const currentDate = new Date()
-        if(accessTokenExpiryTime <= currentDate && accessToken){
-            Cookies.remove("access_token")
-            Cookies.remove("access_token_expiry")
-            window.location.href = "auth/login"
-            return
-        }
+        
 
-        return accessToken
+        return token
     }
     async request(endpoint: string, options: RequestInit={}) {
         const headers = {
@@ -55,7 +51,7 @@ class ApiClient{
         return this.request(endpoint, options)
     }
 
-    async postWithToken(endpoint: string, options: RequestInit = {}, data: object) {
+    async postWithToken(endpoint: string, data: object, options: RequestInit = {}) {
         const token = await this.getToken()
         return this.request(endpoint, {
             ...options,
@@ -68,7 +64,7 @@ class ApiClient{
         })
     }
 
-    async postWithoutToken(endpoint: string, options: RequestInit = {}, data: object) {
+    async postWithoutToken(endpoint: string, data: object, options: RequestInit = {}) {
         return this.request(endpoint, {
             ...options,
             method: "POST",
@@ -76,7 +72,7 @@ class ApiClient{
         })
     }
 
-    async postWithTokenFormData(endpoint:string,formData:BodyInit,options:RequestInit = {}){
+    async postWithTokenFormData(endpoint:string, formData:BodyInit, options:RequestInit = {}){
         const token = await this.getToken();
         return this.request(
             endpoint,
