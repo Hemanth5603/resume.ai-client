@@ -1,4 +1,4 @@
-const host = "localhost:8080/"
+const host = process.env.SERVER_HOST
 
 export const routes = {
     UPLOAD: `${host}/upload`,

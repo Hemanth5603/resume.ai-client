@@ -2,18 +2,6 @@ import { useAuth } from "@clerk/clerk-react"
 import { useUser } from "@clerk/nextjs"
 
 class ApiClient{
-    async getToken() {
-        const {isSignedIn} = useUser()
-        const {getToken} = useAuth()
-        const token = await getToken({template: "default"})
-        if (!isSignedIn) {
-            window.location.href = "auth/login"
-            return
-        }
-        
-
-        return token
-    }
     async request(endpoint: string, options: RequestInit={}) {
         const headers = {
             "Content-Type" : "application/json",
@@ -26,18 +14,30 @@ class ApiClient{
         })
 
         if (!response.ok) {
-            const errorData = await response.json()
+            let errorMessage = "An unexpected error occured"
+            const contentType = response.headers.get("Content-type")
+            if (response.status === 404) {
+                errorMessage = "Cannot process your request";
+            } else if (contentType && contentType.includes("application/json")) {
+            const errorData = await response.json().catch(() => ({}));
+                errorMessage = errorData.error || errorData.message || errorMessage;
+            }
+
             throw {
                 "status_code" : response.status,
-                "message" : errorData.error || "An unexpected error occured"
+                "message" : errorMessage || "An unexpected error occured"
             }
         }
-        const res = await response.json()
-        return res
+        const contentType = response.headers.get("Content-type")
+        if(contentType && contentType.includes("application/json")) {
+            return await response.json()
+        }
+        else {
+            return await response.text()
+        }
     }
 
-    async getWithToken(endpoint: string, options: RequestInit = {}) {
-        const token = await this.getToken();
+    async getWithToken(endpoint: string, token: string, options: RequestInit = {}) {
         return this.request(endpoint, {
             ...options,
             headers: {
@@ -51,8 +51,7 @@ class ApiClient{
         return this.request(endpoint, options)
     }
 
-    async postWithToken(endpoint: string, data: object, options: RequestInit = {}) {
-        const token = await this.getToken()
+    async postWithToken(endpoint: string, token: string, data: object, options: RequestInit = {}) {
         return this.request(endpoint, {
             ...options,
             method: "POST",
@@ -72,8 +71,7 @@ class ApiClient{
         })
     }
 
-    async postWithTokenFormData(endpoint:string, formData:BodyInit, options:RequestInit = {}){
-        const token = await this.getToken();
+    async postWithTokenFormData(endpoint:string, token: string, formData:BodyInit, options:RequestInit = {}){
         return this.request(
             endpoint,
             {

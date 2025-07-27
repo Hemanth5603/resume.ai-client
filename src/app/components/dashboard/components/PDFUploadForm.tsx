@@ -96,8 +96,8 @@ export default function PDFUploadForm() {
           {loading ? 'Uploading...' : 'Upload PDF'}
         </button>
 
-        {success && <p className={styles.success}>✅ Upload successful!</p>}
-        {error && <p className={styles.error}>❌ {error}</p>}
+        {success && <p className={styles.success}>Upload successful!</p>}
+        {error && <p className={styles.error}>{error}</p>}
       </div>
     </div>
   )
