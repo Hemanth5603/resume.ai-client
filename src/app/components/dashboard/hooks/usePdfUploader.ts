@@ -30,8 +30,12 @@ const usePdfUploader = () => {
             const response = await ApiClient.postWithTokenFormData(routes.UPLOAD, token, formData)
             setSuccess(true)
             return response
-        } catch (err : any) {
-            setError(err.message || "Upload Failed")
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unexpected error occurred during upload.");
+            }
         } finally {
             setLoading(false)
         }

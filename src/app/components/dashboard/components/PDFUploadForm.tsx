@@ -1,6 +1,9 @@
 import { useRef, useState } from 'react'
+import { FaGoogleDrive, FaCloudUploadAlt, FaRobot } from 'react-icons/fa'
 import styles from '../styles/PDFUploadForm.module.css'
 import usePdfUploader from '../hooks/usePdfUploader'
+import { RxMagicWand } from "react-icons/rx";
+
 
 
 export default function PDFUploadForm() {
@@ -41,17 +44,15 @@ export default function PDFUploadForm() {
   }
 
   return (
-    <div className={styles.main_comtainer}>
-      <div className={styles.container}>
-        <h2 className={styles.heading}>AI Resume Editor</h2>
-        <h3 className={styles.intro}>Make your PDF ATS friendly with one click.</h3>
-        <div className={styles.uploadWrapper}>
+    <div className={styles.container}>
+      <div className={styles.formSection}>
+        <div className={styles.uploadSection}>
           <button
             type="button"
             className={styles.uploadButton}
             onClick={() => inputRef.current?.click()}
           >
-            Select PDF file
+            UPLOAD RESUME
           </button>
           <input
             ref={inputRef}
@@ -61,39 +62,45 @@ export default function PDFUploadForm() {
             onChange={handleFileSelect}
           />
 
-          {/* Fake Cloud buttons (you can make functional later) */}
           <div className={styles.iconGroup}>
-            <button className={styles.iconButton}>
-              <img src="/google-drive.svg" alt="Google Drive" />
+            <button className={styles.iconButton} title="Google Drive">
+              <FaGoogleDrive className={styles.reactIcon} />
             </button>
-            <button className={styles.iconButton}>
-              <img src="/dropbox.svg" alt="Dropbox" />
+            <button className={styles.iconButton} title="Cloud Storage">
+              <FaCloudUploadAlt className={styles.reactIcon} />
             </button>
           </div>
         </div>
+
         {loading && (
           <div className={styles.progressBarContainer}>
             <div className={styles.progressBar} style={{ width: `${progress}%` }} />
           </div>
         )}
 
-        <p className={styles.dropNote}>
-          {file?.name ? file.name : 'or drop PDF here'}
-        </p>
-
-        <textarea
-          className={styles.textarea}
-          placeholder="Enter the job description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        {/* Job Description Section */}
+        <div className={styles.textareaSection}>
+          <textarea
+            className={styles.textarea}
+            placeholder="Write Your Job Description..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <div className={styles.textareaFooter}>
+            <span className={styles.upgradeText}>Upgrade to pro subscription for advanced models</span>
+            <button className={styles.aiButton} title="AI Assistant">
+              <FaRobot className={styles.reactIcon} />
+            </button>
+          </div>
+        </div>
 
         <button
-          className={styles.button}
+          className={styles.getResumeButton}
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? 'Uploading...' : 'Upload PDF'}
+          {loading ? 'PROCESSING...' : 'GET RESUME'}
+          <RxMagicWand scale={4}/>
         </button>
 
         {success && <p className={styles.success}>Upload successful!</p>}

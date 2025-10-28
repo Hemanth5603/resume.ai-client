@@ -1,6 +1,3 @@
-import { useAuth } from "@clerk/clerk-react"
-import { useUser } from "@clerk/nextjs"
-
 class ApiClient{
     async request(endpoint: string, options: RequestInit={}) {
         const headers = {
@@ -86,4 +83,5 @@ class ApiClient{
     }
 }
 
-export default new ApiClient
+const apiClient = new ApiClient();
+export default apiClient;

@@ -1,61 +1,68 @@
 "use client";
-import { useState } from 'react'
-import styles from './styles/Navbar.module.css'
-import Link from 'next/link'
-import Cookies from 'js-cookie'
-import { useClerk, useUser } from '@clerk/nextjs';
+import { useState } from "react";
+import styles from "./styles/Navbar.module.css";
+import Link from "next/link";
+import Image from "next/image";
+import { useClerk, useUser } from "@clerk/nextjs";
 
 export default function Navbar() {
-  const {isSignedIn, user} = useUser()
-  const {signOut} = useClerk()
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen)
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const handleLogout = () => {
-      signOut(() => {
-      window.location.href="/"
-    })
-  }
+    signOut(() => {
+      window.location.href = "/";
+    });
+  };
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.left}>
-        <Link href="/" className={styles.logo}>
-          Resume.ai
-        </Link>
-        <Link href="/pricing" className={styles.link}>
-          Pricing
-        </Link>
-      </div>
-
-      <div className={styles.right}>
-        {!isSignedIn ? (
-          <>
-          <Link href="/auth/login" className={styles.loginButton}>
-          Login
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <Link href="/" className={styles.logo}>
+            resume.ai
           </Link>
-          <Link href="/auth/signup" className={styles.signupButton}>
-          Sign Up
-          </Link>
-          </>
-        ) : (
-          <div className={styles.profileWrapper}>
-            <button onClick={toggleDropdown} className={styles.profileButton}>
-              <img src={user.imageUrl} alt="/avatar.svg" className={styles.avatar} />
-            </button>
+        </div>
 
-          {dropdownOpen && (
-            <div className={styles.dropdown}>
-              <Link href="/profile">Profile</Link>
-              <Link href="/transactions">Transactions</Link>
-              <Link href="/history">History</Link>
-              <button onClick={handleLogout}>
-                Logout
+        <div className={styles.right}>
+          <div className={styles.center}>
+            <Link href="/pricing" className={styles.link}>
+              Pricing
+            </Link>
+            <Link href="/reviews" className={styles.link}>
+              Reviews
+            </Link>
+          </div>
+
+          {!isSignedIn ? (
+            <Link href="/auth/login" className={styles.loginButton}>
+              Login
+            </Link>
+          ) : (
+            <div className={styles.profileWrapper}>
+              <button onClick={toggleDropdown} className={styles.profileButton}>
+                <Image
+                  src={user.imageUrl}
+                  alt="User avatar"
+                  className={styles.avatar}
+                  width={40}
+                  height={40}
+                />
               </button>
+
+              {dropdownOpen && (
+                <div className={styles.dropdown}>
+                  <Link href="/profile">Profile</Link>
+                  <Link href="/transactions">Transactions</Link>
+                  <Link href="/history">History</Link>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
             </div>
           )}
-          </div>
-        )}
+        </div>
       </div>
     </nav>
-  )
+  );
 }
