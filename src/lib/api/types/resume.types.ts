@@ -14,8 +14,8 @@ export interface ParseResumeRequest {
 export interface ParseResumeResponse {
   success: boolean;
   data?: {
-    parsed_resume?: any;
-    optimized_resume?: any;
+    parsed_resume?: Record<string, unknown>;
+    optimized_resume?: Record<string, unknown>;
     match_score?: number;
     suggestions?: string[];
     download_url?: string;
