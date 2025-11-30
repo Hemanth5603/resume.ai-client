@@ -67,7 +67,7 @@ export default function ProfileDashboard() {
           </Card>
 
           {/* Resumes Section */}
-          <div>
+          <div className="profile-card">
             <h3 className="section-title">YOUR RESUMES</h3>
             {/* Placeholder for resumes content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
