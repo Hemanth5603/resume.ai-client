@@ -4,7 +4,7 @@
 export interface ParseResumeRequest {
   file: File;
   job_description: string;
-  job_roles: string[];
+  related_jobs: string[];
 }
 
 /**
@@ -12,16 +12,7 @@ export interface ParseResumeRequest {
  * Adjust this based on actual API response structure
  */
 export interface ParseResumeResponse {
-  success: boolean;
-  data?: {
-    parsed_resume?: Record<string, unknown>;
-    optimized_resume?: Record<string, unknown>;
-    match_score?: number;
-    suggestions?: string[];
-    download_url?: string;
-  };
-  message?: string;
-  error?: string;
+  gcs_url: string;
 }
 
 /**

@@ -122,7 +122,7 @@ export default function PDFUploadForm() {
         <div className={styles.textareaSection}>
           <textarea
             className={styles.textarea}
-            placeholder="Write Your Job Description..."
+            placeholder="Give Your Job Description and Key Responsibilities."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -141,9 +141,9 @@ export default function PDFUploadForm() {
           onChange={setSelectedJobRoles}
         />
 
-        {success && data?.data?.download_url ? (
+        {success && data?.gcs_url ? (
           <a
-            href={data.data.download_url}
+            href={data.gcs_url}
             className={styles.getResumeButton}
             target="_blank"
             rel="noopener noreferrer"

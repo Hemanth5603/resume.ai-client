@@ -19,9 +19,9 @@ class ResumeService {
     // Append job_description
     formData.append("job_description", request.job_description);
 
-    // Append job_roles as JSON string or individual items
+    // Append related_jobs as JSON string or individual items
     // Depending on API expectation, you might need to adjust this
-    formData.append("job_roles", JSON.stringify(request.job_roles));
+    formData.append("related_jobs", JSON.stringify(request.related_jobs));
 
     // If the API expects individual items, use this instead:
     // request.job_roles.forEach(role => {
