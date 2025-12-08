@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/proxy/:path*",
-        destination: "http://34.130.75.211:8000/api/v1/:path*",
+        destination: "https://www.nexuretech.in/api/v1/:path*",
       },
     ];
   },

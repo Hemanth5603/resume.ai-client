@@ -1,6 +1,6 @@
 const host = process.env.SERVER_HOST;
 const resumeApiHost =
-  process.env.NEXT_PUBLIC_RESUME_API_HOST || "http://34.130.75.211:8000";
+  process.env.NEXT_PUBLIC_RESUME_API_HOST || "https://www.nexuretech.in";
 
 export const routes = {
   UPLOAD: `${host}/upload`,
