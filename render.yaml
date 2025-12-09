@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: resume-ai-client
+    runtime: node
+    plan: starter # Change to 'standard' or 'pro' for production
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: NODE_ENV
+        value: production
+      # Add your environment variables here
+      # - key: NEXT_PUBLIC_RESUME_API_HOST
+      #   value: https://www.nexuretech.in
+      # - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+      #   sync: false # Set this in Render dashboard
+      # - key: CLERK_SECRET_KEY
+      #   sync: false # Set this in Render dashboard
