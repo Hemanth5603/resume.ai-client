@@ -1,3 +1,5 @@
+"use client";
+
 import PDFUploadForm from "./PDFUploadForm";
 import Footer from "./Footer";
 import FeaturesSection from "./FeaturesSection";

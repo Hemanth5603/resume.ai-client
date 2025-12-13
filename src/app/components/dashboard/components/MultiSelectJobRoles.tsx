@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState, useMemo } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import useJobRoles from "../hooks/useJobRoles";

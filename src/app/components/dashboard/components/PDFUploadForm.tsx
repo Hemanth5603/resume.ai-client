@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
@@ -5,6 +7,7 @@ import styles from "../styles/PDFUploadForm.module.css";
 import useResumeParser from "../hooks/useResumeParser";
 import { RxMagicWand } from "react-icons/rx";
 import MultiSelectJobRoles from "./MultiSelectJobRoles";
+import { ErrorModal } from "@/components/ui/error-modal";
 
 export default function PDFUploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,6 +17,19 @@ export default function PDFUploadForm() {
   const [progress, setProgress] = useState(0);
   const { parseResume, loading, error, data } = useResumeParser();
   const success = !!data;
+
+  // Error modal state
+  const [errorModal, setErrorModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    details?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    details: undefined,
+  });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -26,7 +42,12 @@ export default function PDFUploadForm() {
     if (selected && allowedTypes.includes(selected.type)) {
       setFile(selected);
     } else {
-      alert("Only PDF and DOCX files are allowed.");
+      setErrorModal({
+        isOpen: true,
+        title: "Invalid File Type",
+        message: "Only PDF and DOCX files are allowed.",
+        details: selected ? `Selected file type: ${selected.type}` : undefined,
+      });
     }
   };
 
@@ -39,7 +60,12 @@ export default function PDFUploadForm() {
 
   const handleSubmit = async () => {
     if (!file || !description.trim()) {
-      alert("Please select a PDF or DOCX file and enter a job description.");
+      setErrorModal({
+        isOpen: true,
+        title: "Missing Information",
+        message: "Please select a PDF or DOCX file and enter a job description.",
+        details: !file ? "No file selected" : "Job description is empty",
+      });
       return;
     }
     setProgress(0);
@@ -58,13 +84,28 @@ export default function PDFUploadForm() {
     try {
       const response = await parseResume(file, description, selectedJobRoles);
       console.log("Resume Parser API Response:", response);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Resume Parser API Error:", err);
+      setErrorModal({
+        isOpen: true,
+        title: "API Error",
+        message: err?.message || "An unexpected error occurred while processing your resume.",
+        details: err?.status_code ? `Error Code: ${err.status_code}` : undefined,
+      });
     }
 
     clearInterval(simulateProcess);
     setProgress(100);
     setTimeout(() => setProgress(0), 1000);
+  };
+
+  const closeErrorModal = () => {
+    setErrorModal({
+      isOpen: false,
+      title: "",
+      message: "",
+      details: undefined,
+    });
   };
 
   return (
@@ -171,6 +212,14 @@ export default function PDFUploadForm() {
         {success && <p className={styles.success}>Upload successful!</p>}
         {error && <p className={styles.error}>{error}</p>}
       </div>
+
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        onClose={closeErrorModal}
+        title={errorModal.title}
+        message={errorModal.message}
+        details={errorModal.details}
+      />
     </div>
   );
 }
