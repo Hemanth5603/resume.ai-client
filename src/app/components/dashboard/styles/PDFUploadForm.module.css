@@ -265,11 +265,18 @@
   .container {
     padding: 0 1rem;
     margin: 1rem auto;
+    max-width: 100%;
+  }
+
+  .formSection {
+    gap: 1.5rem;
+    width: 100%;
   }
 
   .uploadSection {
     flex-direction: column;
     gap: 1rem;
+    max-width: 100%;
   }
 
   .uploadButton {
@@ -277,23 +284,81 @@
     max-width: 100%;
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
+    box-shadow: 3px 3px 0px #1a1a1a;
+  }
+
+  .uploadButton:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px #1a1a1a;
   }
 
   .iconGroup {
     flex-direction: row;
     justify-content: center;
     gap: 1.5rem;
+    width: 100%;
+  }
+
+  .selectedFileContainer {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    max-width: 100%;
+  }
+
+  .fileName {
+    font-size: 0.85rem;
+    max-width: 200px;
+  }
+
+  .textareaSection {
+    width: 100%;
+    max-width: 100%;
   }
 
   .textarea {
     min-height: 100px;
     font-size: 0.9rem;
+    padding: 0.75rem;
+    box-shadow: 3px 3px 0px #1a1a1a;
+  }
+
+  .textarea:focus {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #1a1a1a;
+  }
+
+  .textareaFooter {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .upgradeText {
+    font-size: 0.75rem;
+    text-align: center;
   }
 
   .getResumeButton {
     width: 100%;
+    max-width: 100%;
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
+    box-shadow: 3px 3px 0px #1a1a1a;
+  }
+
+  .getResumeButton:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px #1a1a1a;
+  }
+
+  .progressBarContainer {
+    max-width: 100%;
+  }
+
+  .success,
+  .error {
+    font-size: 0.9rem;
+    padding: 0.5rem;
   }
 }
 
