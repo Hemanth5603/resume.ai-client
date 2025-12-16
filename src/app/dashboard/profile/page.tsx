@@ -3,9 +3,9 @@
 import React from "react";
 import "./profile.css";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent } from "@/components/ui/card";
-import { MoreVertical, Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import Navbar from "@/app/styled_components/Navbar";
 

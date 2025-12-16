@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import resumeService from "@/lib/api/services/resumeService";
-import type { ApiError } from "@/lib/api/types/resume.types";
 
 /**
  * Custom hook for fetching unique job roles

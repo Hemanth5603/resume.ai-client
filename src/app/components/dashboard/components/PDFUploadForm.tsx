@@ -8,6 +8,7 @@ import useResumeParser from "../hooks/useResumeParser";
 import { RxMagicWand } from "react-icons/rx";
 import MultiSelectJobRoles from "./MultiSelectJobRoles";
 import { ErrorModal } from "@/components/ui/error-modal";
+import type { ApiError } from "@/lib/api/types/resume.types";
 
 export default function PDFUploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -63,7 +64,8 @@ export default function PDFUploadForm() {
       setErrorModal({
         isOpen: true,
         title: "Missing Information",
-        message: "Please select a PDF or DOCX file and enter a job description.",
+        message:
+          "Please select a PDF or DOCX file and enter a job description.",
         details: !file ? "No file selected" : "Job description is empty",
       });
       return;
@@ -84,13 +86,18 @@ export default function PDFUploadForm() {
     try {
       const response = await parseResume(file, description, selectedJobRoles);
       console.log("Resume Parser API Response:", response);
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as ApiError;
       console.error("Resume Parser API Error:", err);
       setErrorModal({
         isOpen: true,
         title: "API Error",
-        message: err?.message || "An unexpected error occurred while processing your resume.",
-        details: err?.status_code ? `Error Code: ${err.status_code}` : undefined,
+        message:
+          err?.message ||
+          "An unexpected error occurred while processing your resume.",
+        details: err?.status_code
+          ? `Error Code: ${err.status_code}`
+          : undefined,
       });
     }
 
