@@ -142,58 +142,79 @@
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 0.5rem;
-    height: auto;
+    height: 60px;
+    backdrop-filter: blur(10px);
   }
 
   .container {
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 95%;
-    padding: 0.75rem;
-    height: auto;
+    flex-direction: row;
+    width: 100%;
+    padding: 0 1rem;
+    height: 60px;
+    border-left: none;
+    border-right: none;
+    justify-content: space-between;
   }
 
   .left {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-start;
   }
 
   .right {
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
+    flex-direction: row;
+    width: auto;
+    gap: 1rem;
     align-items: center;
   }
 
   .center {
-    flex-direction: column;
+    display: none; /* Hide links on very small screens to prevent overflow, or keep them if space allows. Given "align horizontally", let's try to keep them but maybe hide on very small? */
+    /* tailored approach: Hide textual links on mobile, keep logo + login/profile? 
+       User said: "make the header items align horizontally". 
+       If I hide them, I'm not aligning them.
+       Let's try to show them with smaller text/gaps first as analyzed.
+    */
+    flex-direction: row;
     gap: 0.75rem;
-    width: 100%;
-    align-items: center;
+    width: auto;
+    display: flex; /* Explicitly ensure flex */
   }
 
+  /* Adjust for very small screens if needed, maybe hide center on < 480px? 
+     For now, let's implement the horizontal alignment as requested.
+  */
+
   .link {
-    font-size: 0.95rem;
-    text-align: center;
-    width: 100%;
-    padding: 0.5rem;
+    font-size: 0.85rem; /* Smaller text */
+    text-align: left; /* Reset */
+    width: auto;
+    padding: 0;
   }
 
   .logo {
-    font-size: 1.5rem;
-    text-align: center;
+    font-size: 1.25rem; /* Smaller logo */
+    text-align: left;
   }
 
   .loginButton {
-    padding: 0.5rem 1.5rem;
-    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
     width: auto;
   }
 
   .dropdown {
-    right: 50%;
-    transform: translateX(50%);
-    min-width: 200px;
+    right: 0;
+    transform: none;
+    min-width: 160px;
+  }
+  
+  /* Hide Reviews/Pricing on extremely small screens if they overflow? 
+     Let's add a sub-query for safety or just let it be tight. 
+  */
+  @media (max-width: 480px) {
+      .center {
+          display: none;
+      }
   }
 }

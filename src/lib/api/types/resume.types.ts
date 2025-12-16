@@ -21,6 +21,7 @@ export interface ParseResumeResponse {
 export interface ApiError {
   status_code: number;
   message: string;
+  error_code?: number;
 }
 
 /**

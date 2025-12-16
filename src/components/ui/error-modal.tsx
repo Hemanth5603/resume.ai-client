@@ -29,11 +29,13 @@ export function ErrorModal({
 }: ErrorModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white text-black">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-destructive" />
-            <DialogTitle className="text-destructive">{title}</DialogTitle>
+            <DialogTitle className="text-destructive text-black">
+              {title}
+            </DialogTitle>
           </div>
           <DialogDescription className="text-left pt-2">
             {message}
@@ -55,4 +57,3 @@ export function ErrorModal({
     </Dialog>
   );
 }
-

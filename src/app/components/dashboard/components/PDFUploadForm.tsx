@@ -89,12 +89,21 @@ export default function PDFUploadForm() {
     } catch (error: unknown) {
       const err = error as ApiError;
       console.error("Resume Parser API Error:", err);
+
+      let title = "API Error";
+      let message =
+        err?.message ||
+        "An unexpected error occurred while processing your resume.";
+
+      if (err?.error_code === 420 || err?.status_code === 420) {
+        title = "Format Not Supported";
+        message = "The Requested Resume Format is not supported yet";
+      }
+
       setErrorModal({
         isOpen: true,
-        title: "API Error",
-        message:
-          err?.message ||
-          "An unexpected error occurred while processing your resume.",
+        title,
+        message,
         details: err?.status_code
           ? `Error Code: ${err.status_code}`
           : undefined,
