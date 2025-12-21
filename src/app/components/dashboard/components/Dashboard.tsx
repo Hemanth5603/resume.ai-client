@@ -2,22 +2,25 @@
 
 import PDFUploadForm from "./PDFUploadForm";
 import Footer from "./Footer";
-import FeaturesSection from "./FeaturesSection";
 import styles from "../styles/Dashboard.module.css";
+import { useUserFromStore } from "@/store";
+import HeroSection from "./HeroSection";
+import { useEffect } from "react";
 
 const Dashboard = () => {
+  const { user, isSignedIn, isLoading } = useUserFromStore();
+  
+  useEffect(() => {
+  }, [user, isSignedIn, isLoading]);
+  
   return (
     <div className={styles.dashboardContainer}>
       <main className={styles.mainContent}>
-        <div className={styles.heroSection}>
-          <h1 className={styles.heroTitle}>
-            CURATE YOUR PROFESSIONAL NARRATIVE
-            <br />
-            WITH SURGICAL PRECISION
-          </h1>
-        </div>
-        <PDFUploadForm />
-        <FeaturesSection />
+        {!isSignedIn ?
+          <HeroSection />
+         : 
+          <PDFUploadForm />
+        }
       </main>
       <Footer />
     </div>

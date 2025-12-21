@@ -4,6 +4,7 @@ import '../app/globals.css'
 import Navbar from '../app/styled_components/Navbar' 
 import Head from 'next/head'
 import { ClerkProvider } from '@clerk/nextjs'
+import { UserStoreProvider } from '@/store'
 
 
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -15,8 +16,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <title>Resume.ai | Online PDF optimizing AI Tool</title>
       </Head>
       <ClerkProvider {...pageProps}>
-        <Navbar />
-        <Component {...pageProps} />
+        <UserStoreProvider>
+          <Navbar />
+          <Component {...pageProps} />
+        </UserStoreProvider>
       </ClerkProvider>
     </>
   )

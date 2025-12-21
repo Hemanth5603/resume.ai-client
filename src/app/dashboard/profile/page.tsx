@@ -6,11 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useUserFromStore } from "@/store";
 import Navbar from "@/app/styled_components/Navbar";
 
 export default function ProfileDashboard() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { user, isLoaded, isSignedIn } = useUserFromStore();
 
   if (!isLoaded || !isSignedIn) {
     return (
@@ -31,16 +31,16 @@ export default function ProfileDashboard() {
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20 border-4 border-yellow-100">
                     <AvatarImage
-                      src={user.imageUrl}
-                      alt={user.fullName || "User"}
+                      src={user?.imageUrl}
+                      alt={user?.fullName || "User"}
                     />
                     <AvatarFallback>
-                      {user.firstName?.charAt(0) || "U"}
+                      {user?.firstName?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">
-                      {user.fullName}
+                      {user?.fullName}
                     </h2>
                     <p className="text-gray-500">Product Designer</p>
                   </div>
@@ -52,14 +52,14 @@ export default function ProfileDashboard() {
                   <div className="icon-button">
                     <Mail className="h-5 w-5" />
                   </div>
-                  <span>{user.primaryEmailAddress?.emailAddress}</span>
+                  <span>{user?.email}</span>
                 </div>
-                {user.primaryPhoneNumber && (
+                {user?.phoneNumber && (
                   <div className="flex items-center gap-3 text-gray-600">
                     <div className="icon-button">
                       <Phone className="h-5 w-5" />
                     </div>
-                    <span>{user.primaryPhoneNumber.phoneNumber}</span>
+                    <span>{user.phoneNumber}</span>
                   </div>
                 )}
               </div>

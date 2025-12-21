@@ -49,6 +49,7 @@ const MultiSelectJobRoles: React.FC<MultiSelectJobRolesProps> = ({
     } else {
       onChange([...selectedRoles, role]);
     }
+    setSearchTerm("");
   };
 
   if (loading) {
@@ -75,7 +76,8 @@ const MultiSelectJobRoles: React.FC<MultiSelectJobRolesProps> = ({
       </div>
 
       <div className={styles.optionsContainer}>
-        {filteredAndSortedRoles.map((role) => (
+        {filteredAndSortedRoles.length > 0 ? (
+          filteredAndSortedRoles.map((role) => (
           <div
             key={role}
             className={`${styles.option} ${
@@ -91,7 +93,12 @@ const MultiSelectJobRoles: React.FC<MultiSelectJobRolesProps> = ({
             />
             {role}
           </div>
-        ))}
+        ))
+      ) : (
+        <div className={styles.noResults}>
+          <span>No job roles found</span>
+        </div>
+      )}
       </div>
     </div>
   );

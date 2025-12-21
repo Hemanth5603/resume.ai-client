@@ -3,10 +3,11 @@ import { useState } from "react";
 import styles from "./styles/Navbar.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
+import { useUserFromStore } from "@/store";
 
 export default function Navbar() {
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn, user } = useUserFromStore();
   const { signOut } = useClerk();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -43,7 +44,7 @@ export default function Navbar() {
             <div className={styles.profileWrapper}>
               <button onClick={toggleDropdown} className={styles.profileButton}>
                 <Image
-                  src={user.imageUrl}
+                  src={user?.imageUrl || "/avatar.svg"}
                   alt="User avatar"
                   className={styles.avatar}
                   width={40}
