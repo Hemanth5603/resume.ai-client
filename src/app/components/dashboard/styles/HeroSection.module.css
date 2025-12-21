@@ -1,0 +1,31 @@
+.heroSection {
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    max-width: 1200px;
+    height: 100vh;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  
+  .heroTitle {
+     font-family: 'Instrument Serif Local', 'Instrument Serif', serif;
+    font-size: clamp(2.0rem, 5vw, 4rem);
+    font-weight: 100;
+    color: #1a1a1a;
+    line-height: 1.2;
+    letter-spacing: 0.1%;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  
+  @media (max-width: 768px) {
+    .heroSection {
+      padding: 2rem 1rem 1rem;
+    }
+    
+    .heroTitle {
+      font-size: 2rem;
+      line-height: 1.3;
+    }
+  }
+  

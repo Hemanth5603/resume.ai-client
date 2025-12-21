@@ -19,6 +19,30 @@ export default function PDFUploadForm() {
   const { parseResume, loading, error, data } = useResumeParser();
   const success = !!data;
 
+  const getErrorFromStatusCode = (statusCode: Number) => {
+    const defaultError = {
+      title: "Internal Server Error!!",
+      message: "Failed to generate resume for you..",
+      details: "Unexpected Error occured while we processing your request."
+    }
+    switch(statusCode) {
+      case 402:
+        return {
+          title: "Payment Required",
+          message: "Failed to generate resume for you..",
+          details: "You are trying to access a paid resource."
+        }
+      case 420:
+        return {
+          title: "Format Not Supported",
+          message: "The Requested Resume Format is not supported yet",
+          details: "Please try again with a different file format."
+        }
+      default:
+        return defaultError;
+    }
+  }; 
+
   // Error modal state
   const [errorModal, setErrorModal] = useState<{
     isOpen: boolean;
@@ -90,23 +114,13 @@ export default function PDFUploadForm() {
       const err = error as ApiError;
       console.error("Resume Parser API Error:", err);
 
-      let title = "API Error";
-      let message =
-        err?.message ||
-        "An unexpected error occurred while processing your resume.";
-
-      if (err?.error_code === 420 || err?.status_code === 420) {
-        title = "Format Not Supported";
-        message = "The Requested Resume Format is not supported yet";
-      }
+      const { title, message, details } = getErrorFromStatusCode(err?.status_code ?? err?.error_code);
 
       setErrorModal({
         isOpen: true,
         title,
         message,
-        details: err?.status_code
-          ? `Error Code: ${err.status_code}`
-          : undefined,
+        details,
       });
     }
 
