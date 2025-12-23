@@ -5,9 +5,13 @@ import Navbar from '../app/styled_components/Navbar'
 import Head from 'next/head'
 import { ClerkProvider } from '@clerk/nextjs'
 import { UserStoreProvider } from '@/store'
+import { useRouter } from 'next/router'
 
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter()
+  const isAuthPage = router.pathname.startsWith('/auth/')
+  
   return (
     <>
       < Head>
@@ -17,7 +21,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ClerkProvider {...pageProps}>
         <UserStoreProvider>
-          <Navbar />
+          {!isAuthPage && <Navbar />}
           <Component {...pageProps} />
         </UserStoreProvider>
       </ClerkProvider>
