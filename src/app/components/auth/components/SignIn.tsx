@@ -1,16 +1,7 @@
-import { SignIn, useUser } from "@clerk/nextjs"
-import styles from "../styles/SignUpSignIn.module.css"
+import CustomSignIn from "./CustomSignIn";
 
-const ClerkSignIn = () => {
-    const {isSignedIn} = useUser()
-    if( isSignedIn ) {
-        return null
-    }
-    return (
-        <div className={styles.container}>
-            <SignIn path="/auth/login" routing="path" />
-        </div>
-    )
+const SignInPage = () => {
+    return <CustomSignIn />
 }
 
-export default ClerkSignIn
+export default SignInPage

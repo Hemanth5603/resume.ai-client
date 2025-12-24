@@ -19,7 +19,7 @@ export default function PDFUploadForm() {
   const { parseResume, loading, error, data } = useResumeParser();
   const success = !!data;
 
-  const getErrorFromStatusCode = (statusCode: Number) => {
+  const getErrorFromStatusCode = (statusCode: number) => {
     const defaultError = {
       title: "Internal Server Error!!",
       message: "Failed to generate resume for you..",
