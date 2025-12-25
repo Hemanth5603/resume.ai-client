@@ -1,6 +1,5 @@
 "use client";
 
-import { useSignIn } from "@clerk/nextjs";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,55 +7,38 @@ import styles from "../styles/CustomAuth.module.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaLinkedin, FaEye, FaEyeSlash } from "react-icons/fa";
 import AuthLeftPanel from "./AuthLeftPanel";
+import { useAuth } from "@/store/hooks/useAuth";
 
 const CustomSignIn = () => {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const auth = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   // Handle email/password sign in
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isLoaded) return;
-
-    setIsLoading(true);
-    setError("");
 
     try {
-      const result = await signIn.create({
-        identifier: email,
-        password,
-      });
-
-      if (result.status === "complete") {
-        await setActive({ session: result.createdSessionId });
-        router.push("/");
-      }
-    } catch (err: unknown) {
-      const error = err as { errors?: Array<{ message: string }> };
-      setError(error.errors?.[0]?.message || "Failed to sign in. Please try again.");
-    } finally {
-      setIsLoading(false);
+      await auth.signIn({ email, password });
+      router.push("/");
+    } catch (err) {
+      // Error is already handled in the store
+      console.error("Sign in error:", err);
     }
   };
 
   // Handle OAuth sign in
-  const handleOAuthSignIn = async (provider: "oauth_google" | "oauth_apple" | "oauth_linkedin") => {
-    if (!isLoaded) return;
-
+  const handleOAuthSignIn = async (provider: "google" | "apple" | "linkedin_oidc") => {
     try {
-      await signIn.authenticateWithRedirect({
-        strategy: provider,
+      await auth.signInWithOAuth({
+        provider,
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/",
       });
-    } catch (err: unknown) {
-      const error = err as { errors?: Array<{ message: string }> };
-      setError(error.errors?.[0]?.message || "Failed to sign in with OAuth.");
+    } catch (err) {
+      console.error("OAuth sign in error:", err);
     }
   };
 
@@ -73,9 +55,9 @@ const CustomSignIn = () => {
           </div>
 
           {/* Error Message */}
-          {error && (
+          {auth.error && (
             <div className={styles.errorMessage}>
-              <span>⚠️ {error}</span>
+              <span>⚠️ {auth.error.message}</span>
             </div>
           )}
 
@@ -93,10 +75,10 @@ const CustomSignIn = () => {
                 id="email"
                 className={styles.input}
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={auth.isLoading}
               />
             </div>
 
@@ -118,13 +100,13 @@ const CustomSignIn = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                 />
                 <button
                   type="button"
                   className={styles.passwordToggle}
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -135,9 +117,9 @@ const CustomSignIn = () => {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={isLoading}
+              disabled={auth.isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {auth.isLoading ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
@@ -151,8 +133,8 @@ const CustomSignIn = () => {
             <button
               type="button"
               className={styles.oauthButton}
-              onClick={() => handleOAuthSignIn("oauth_google")}
-              disabled={isLoading}
+              onClick={() => handleOAuthSignIn("google")}
+              disabled={auth.isLoading}
             >
               <FcGoogle className={styles.oauthIcon} />
               <span>Continue with Google</span>
@@ -161,8 +143,8 @@ const CustomSignIn = () => {
             <button
               type="button"
               className={styles.oauthButton}
-              onClick={() => handleOAuthSignIn("oauth_apple")}
-              disabled={isLoading}
+              onClick={() => handleOAuthSignIn("apple")}
+              disabled={auth.isLoading}
             >
               <FaApple className={styles.oauthIcon} />
               <span>Continue with Apple</span>
@@ -171,8 +153,8 @@ const CustomSignIn = () => {
             <button
               type="button"
               className={styles.oauthButton}
-              onClick={() => handleOAuthSignIn("oauth_linkedin")}
-              disabled={isLoading}
+              onClick={() => handleOAuthSignIn("linkedin_oidc")}
+              disabled={auth.isLoading}
             >
               <FaLinkedin className={styles.oauthIcon} style={{ color: "#0077B5" }} />
               <span>Continue with LinkedIn</span>
