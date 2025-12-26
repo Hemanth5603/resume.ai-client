@@ -141,6 +141,23 @@ export default function PDFUploadForm() {
   return (
     <div className={styles.container}>
       <div className={styles.formSection}>
+        <div className={styles.textareaSection}>
+          <textarea
+            className={styles.textarea}
+            placeholder="Give Your Job Description and Key Responsibilities."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <div className={styles.textareaFooter}>
+            <span className={styles.upgradeText}>
+              Upgrade to pro subscription for advanced models
+            </span>
+            <button className={styles.aiButton} title="AI Assistant">
+              <FaRobot className={styles.reactIcon} />
+            </button>
+          </div>
+        </div>
+
         <div className={styles.uploadSection}>
           <button
             type="button"
@@ -156,15 +173,6 @@ export default function PDFUploadForm() {
             style={{ display: "none" }}
             onChange={handleFileSelect}
           />
-
-          {/* <div className={styles.iconGroup}>
-            <button className={styles.iconButton} title="Google Drive">
-              <FaGoogleDrive className={styles.reactIcon} />
-            </button>
-            <button className={styles.iconButton} title="Cloud Storage">
-              <FaCloudUploadAlt className={styles.reactIcon} />
-            </button>
-          </div> */}
         </div>
 
         {file && (
@@ -189,23 +197,6 @@ export default function PDFUploadForm() {
             />
           </div>
         )}
-
-        <div className={styles.textareaSection}>
-          <textarea
-            className={styles.textarea}
-            placeholder="Give Your Job Description and Key Responsibilities."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <div className={styles.textareaFooter}>
-            <span className={styles.upgradeText}>
-              Upgrade to pro subscription for advanced models
-            </span>
-            <button className={styles.aiButton} title="AI Assistant">
-              <FaRobot className={styles.reactIcon} />
-            </button>
-          </div>
-        </div>
 
         <MultiSelectJobRoles
           selectedRoles={selectedJobRoles}

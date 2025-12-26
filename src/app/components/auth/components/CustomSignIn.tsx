@@ -44,7 +44,7 @@ const CustomSignIn = () => {
 
   return (
     <div className={styles.splitContainer}>
-      <AuthLeftPanel />
+      {/* <AuthLeftPanel /> */}
       
       <div className={styles.rightPanel}>
         <div className={styles.authCard}>
