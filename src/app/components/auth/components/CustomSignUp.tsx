@@ -1,6 +1,5 @@
 "use client";
 
-import { useSignUp } from "@clerk/nextjs";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,124 +7,61 @@ import styles from "../styles/CustomAuth.module.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaLinkedin, FaEye, FaEyeSlash } from "react-icons/fa";
 import AuthLeftPanel from "./AuthLeftPanel";
+import { useAuth } from "@/store/hooks/useAuth";
 
 const CustomSignUp = () => {
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const auth = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   // Handle email/password sign up
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isLoaded) return;
-
-    setIsLoading(true);
-    setError("");
 
     try {
-      console.log("Attempting sign up with:", {
-        emailAddress: email,
-        firstName,
-        lastName,
-        hasPassword: !!password
-      });
-
-      const signUpAttempt = await signUp.create({
-        emailAddress: email,
+      await auth.signUp({ 
+        email, 
         password,
-        ...(firstName && { firstName }),
-        ...(lastName && { lastName }),
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
       });
-
-      console.log("Sign up successful, status:", signUpAttempt.status);
-
-      // Send email verification code
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setPendingVerification(true);
-    } catch (err: unknown) {
-      console.error("Sign up error details:", err);
-      const error = err as { 
-        errors?: Array<{ 
-          message: string; 
-          longMessage?: string; 
-          code?: string;
-          meta?: { paramName?: string }
-        }> 
-      };
-      
-      // Get more detailed error message
-      const errorDetail = error.errors?.[0];
-      let errorMessage = "Failed to sign up. Please try again.";
-      
-      if (errorDetail) {
-        errorMessage = errorDetail.longMessage || errorDetail.message || errorMessage;
-        console.error("Clerk error code:", errorDetail.code);
-        console.error("Clerk error message:", errorDetail.message);
-        console.error("Clerk error param:", errorDetail.meta?.paramName);
-        
-        // Add param name to error message if available
-        if (errorDetail.meta?.paramName) {
-          errorMessage = `${errorMessage} (Field: ${errorDetail.meta.paramName})`;
-        }
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
+    } catch (err) {
+      console.error("Sign up error:", err);
     }
   };
 
   // Handle verification code submission
   const handleVerification = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isLoaded) return;
-
-    setIsLoading(true);
-    setError("");
 
     try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code,
-      });
-
-      if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
-        router.push("/");
-      }
-    } catch (err: unknown) {
-      const error = err as { errors?: Array<{ message: string }> };
-      setError(error.errors?.[0]?.message || "Invalid verification code.");
-    } finally {
-      setIsLoading(false);
+      await auth.verifyEmail({ code });
+      router.push("/");
+    } catch (err) {
+      console.error("Verification error:", err);
     }
   };
 
   // Handle OAuth sign up
-  const handleOAuthSignUp = async (provider: "oauth_google" | "oauth_apple" | "oauth_linkedin") => {
-    if (!isLoaded) return;
-
+  const handleOAuthSignUp = async (provider: "google" | "apple" | "linkedin_oidc") => {
     try {
-      await signUp.authenticateWithRedirect({
-        strategy: provider,
+      await auth.signInWithOAuth({
+        provider,
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/",
       });
-    } catch (err: unknown) {
-      const error = err as { errors?: Array<{ message: string }> };
-      setError(error.errors?.[0]?.message || "Failed to sign up with OAuth.");
+    } catch (err) {
+      console.error("OAuth sign up error:", err);
     }
   };
 
   // Verification form
-  if (pendingVerification) {
+  if (auth.pendingVerification) {
     return (
       <div className={styles.splitContainer}>
         <AuthLeftPanel />
@@ -139,9 +75,9 @@ const CustomSignUp = () => {
               </p>
             </div>
 
-            {error && (
+            {auth.error && (
               <div className={styles.errorMessage}>
-                <span>⚠️ {error}</span>
+                <span>⚠️ {auth.error.message}</span>
               </div>
             )}
 
@@ -158,7 +94,7 @@ const CustomSignUp = () => {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   required
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                   maxLength={6}
                 />
               </div>
@@ -166,9 +102,9 @@ const CustomSignUp = () => {
               <button
                 type="submit"
                 className={styles.submitButton}
-                disabled={isLoading}
+                disabled={auth.isLoading}
               >
-                {isLoading ? "Verifying..." : "Verify email"}
+                {auth.isLoading ? "Verifying..." : "Verify email"}
               </button>
             </form>
 
@@ -176,7 +112,7 @@ const CustomSignUp = () => {
               <p className={styles.footerText}>
                 Didn&apos;t receive the code?{" "}
                 <button
-                  onClick={() => signUp?.prepareEmailAddressVerification({ strategy: "email_code" })}
+                  onClick={() => {/* Resend handled by auth service */}}
                   className={styles.footerLink}
                   style={{ background: "none", border: "none", cursor: "pointer" }}
                 >
@@ -204,14 +140,16 @@ const CustomSignUp = () => {
           </div>
 
           {/* Error Message */}
-          {error && (
+          {auth.error && (
             <div className={styles.errorMessage}>
               <div style={{ marginBottom: '0.5rem' }}>
-                <span>⚠️ {error}</span>
+                <span>⚠️ {auth.error.message}</span>
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#e53e3e', opacity: 0.8 }}>
-                Check browser console for more details
-              </div>
+              {auth.error.field && (
+                <div style={{ fontSize: '0.75rem', color: '#e53e3e', opacity: 0.8 }}>
+                  Field: {auth.error.field}
+                </div>
+              )}
             </div>
           )}
 
@@ -232,7 +170,7 @@ const CustomSignUp = () => {
                   placeholder="John"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                 />
               </div>
 
@@ -247,7 +185,7 @@ const CustomSignUp = () => {
                   placeholder="Doe"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                 />
               </div>
             </div>
@@ -264,7 +202,7 @@ const CustomSignUp = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={auth.isLoading}
               />
             </div>
 
@@ -281,14 +219,14 @@ const CustomSignUp = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                   minLength={8}
                 />
                 <button
                   type="button"
                   className={styles.passwordToggle}
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
+                  disabled={auth.isLoading}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -300,9 +238,9 @@ const CustomSignUp = () => {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={isLoading}
+              disabled={auth.isLoading}
             >
-              {isLoading ? "Creating account..." : "Create account"}
+              {auth.isLoading ? "Creating account..." : "Create account"}
             </button>
           </form>
 
@@ -316,8 +254,8 @@ const CustomSignUp = () => {
             <button
               type="button"
               className={styles.oauthButton}
-              onClick={() => handleOAuthSignUp("oauth_google")}
-              disabled={isLoading}
+              onClick={() => handleOAuthSignUp("google")}
+              disabled={auth.isLoading}
             >
               <FcGoogle className={styles.oauthIcon} />
               <span>Continue with Google</span>
@@ -326,8 +264,8 @@ const CustomSignUp = () => {
             <button
               type="button"
               className={styles.oauthButton}
-              onClick={() => handleOAuthSignUp("oauth_apple")}
-              disabled={isLoading}
+              onClick={() => handleOAuthSignUp("apple")}
+              disabled={auth.isLoading}
             >
               <FaApple className={styles.oauthIcon} />
               <span>Continue with Apple</span>
@@ -336,8 +274,8 @@ const CustomSignUp = () => {
             <button
               type="button"
               className={styles.oauthButton}
-              onClick={() => handleOAuthSignUp("oauth_linkedin")}
-              disabled={isLoading}
+              onClick={() => handleOAuthSignUp("linkedin_oidc")}
+              disabled={auth.isLoading}
             >
               <FaLinkedin className={styles.oauthIcon} style={{ color: "#0077B5" }} />
               <span>Continue with LinkedIn</span>

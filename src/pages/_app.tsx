@@ -4,7 +4,7 @@ import '../app/globals.css'
 import Navbar from '../app/styled_components/Navbar' 
 import Head from 'next/head'
 import { ClerkProvider } from '@clerk/nextjs'
-import { UserStoreProvider } from '@/store'
+import { UserStoreProvider, AuthServiceInitializer } from '@/store'
 import { useRouter } from 'next/router'
 
 
@@ -20,10 +20,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <title>Resume.ai | Online PDF optimizing AI Tool</title>
       </Head>
       <ClerkProvider {...pageProps}>
-        <UserStoreProvider>
-          {!isAuthPage && <Navbar />}
-          <Component {...pageProps} />
-        </UserStoreProvider>
+        <AuthServiceInitializer>
+          <UserStoreProvider>
+            {!isAuthPage && <Navbar />}
+            <Component {...pageProps} />
+          </UserStoreProvider>
+        </AuthServiceInitializer>
       </ClerkProvider>
     </>
   )

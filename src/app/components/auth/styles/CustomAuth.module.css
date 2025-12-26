@@ -87,6 +87,24 @@
   font-weight: 500;
 }
 
+/* Success Message */
+.successMessage {
+  padding: 1rem;
+  background: #ffffff;
+  border: 2px solid #16a34a;
+  margin-bottom: 1.5rem;
+  box-shadow: 4px 4px 0px #16a34a;
+}
+
+.successMessage span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #16a34a;
+  font-weight: 500;
+}
+
 /* Form */
 .authForm {
   display: flex;
