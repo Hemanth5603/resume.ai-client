@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import "./profile.css";
+import "../styles/profile.css";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone } from "lucide-react";
 import { useUserFromStore } from "@/store";
-import Navbar from "@/app/styled_components/Navbar";
 
 export default function ProfileDashboard() {
   const { user, isLoaded, isSignedIn } = useUserFromStore();
@@ -22,7 +21,6 @@ export default function ProfileDashboard() {
 
   return (
     <div className="profile-dashboard">
-      <Navbar />
       <div className="flex justify-center p-8">
         <div className="w-full max-w-3xl space-y-8 ">
           <Card className="profile-card">
