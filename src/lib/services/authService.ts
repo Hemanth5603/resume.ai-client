@@ -22,8 +22,8 @@ import type { UserProfile } from '@/store/types/user.types';
 
 // Clerk result types
 interface ClerkResult {
-  status: string;
-  createdSessionId?: string;
+  status: string | null;
+  createdSessionId?: string | null;
   userData?: {
     id: string;
     firstName?: string | null;
@@ -33,12 +33,12 @@ interface ClerkResult {
     imageUrl?: string;
     primaryPhoneNumber?: { phoneNumber: string };
   };
-  emailAddress?: string;
-  firstName?: string;
-  lastName?: string;
+  emailAddress?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
-// Clerk instance types
+// Clerk instance types - these match Clerk's actual SignInResource and SignUpResource
 interface ClerkSignIn {
   create: (params: { identifier: string; password: string } | { strategy: string; identifier: string }) => Promise<ClerkResult>;
   authenticateWithRedirect: (params: { strategy: string; redirectUrl: string; redirectUrlComplete: string }) => Promise<void>;

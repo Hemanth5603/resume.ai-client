@@ -19,10 +19,12 @@ export function AuthServiceInitializer({ children }: { children: React.ReactNode
 
   useEffect(() => {
     // Initialize the auth service with Clerk instances
+    // Clerk's SignInResource and SignUpResource are compatible with our interfaces
+    // but TypeScript doesn't recognize it, so we use type assertion
     initializeAuthService({
-      signIn,
-      signUp,
-      setActive: signInSetActive || signUpSetActive,
+      signIn: signIn as unknown as Parameters<typeof initializeAuthService>[0]['signIn'],
+      signUp: signUp as unknown as Parameters<typeof initializeAuthService>[0]['signUp'],
+      setActive: (signInSetActive || signUpSetActive) as unknown as Parameters<typeof initializeAuthService>[0]['setActive'],
     });
   }, [signIn, signUp, signInSetActive, signUpSetActive]);
 
