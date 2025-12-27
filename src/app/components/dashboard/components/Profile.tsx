@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone } from "lucide-react";
 import { useUserFromStore } from "@/store";
-import Navbar from "@/app/styled_components/Navbar";
 
 export default function ProfileDashboard() {
   const { user, isLoaded, isSignedIn } = useUserFromStore();
