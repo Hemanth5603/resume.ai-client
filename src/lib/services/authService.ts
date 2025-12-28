@@ -20,19 +20,50 @@ import type {
 } from '@/store/types/auth.types';
 import type { UserProfile } from '@/store/types/user.types';
 
+// Clerk result types
+interface ClerkResult {
+  status: string | null;
+  createdSessionId?: string | null;
+  userData?: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    fullName?: string | null;
+    primaryEmailAddress?: { emailAddress: string };
+    imageUrl?: string;
+    primaryPhoneNumber?: { phoneNumber: string };
+  };
+  emailAddress?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+}
+
+// Clerk instance types - these match Clerk's actual SignInResource and SignUpResource
+interface ClerkSignIn {
+  create: (params: { identifier: string; password: string } | { strategy: string; identifier: string }) => Promise<ClerkResult>;
+  authenticateWithRedirect: (params: { strategy: string; redirectUrl: string; redirectUrlComplete: string }) => Promise<void>;
+  attemptFirstFactor: (params: { strategy: string; code: string; password: string }) => Promise<ClerkResult>;
+}
+
+interface ClerkSignUp {
+  create: (params: { emailAddress: string; password: string; firstName?: string; lastName?: string }) => Promise<ClerkResult>;
+  prepareEmailAddressVerification: (params: { strategy: string }) => Promise<void>;
+  attemptEmailAddressVerification: (params: { code: string }) => Promise<ClerkResult>;
+}
+
 // Type for the Clerk instance (will be injected)
-let clerkSignIn: any = null;
-let clerkSignUp: any = null;
-let clerkSetActive: any = null;
+let clerkSignIn: ClerkSignIn | null = null;
+let clerkSignUp: ClerkSignUp | null = null;
+let clerkSetActive: ((params: { session: string }) => Promise<void>) | null = null;
 
 /**
  * Initialize the auth service with Clerk instances
  * This should be called from components that have access to Clerk hooks
  */
 export function initializeAuthService(instances: {
-  signIn?: any;
-  signUp?: any;
-  setActive?: any;
+  signIn?: ClerkSignIn;
+  signUp?: ClerkSignUp;
+  setActive?: (params: { session: string }) => Promise<void>;
 }) {
   if (instances.signIn) clerkSignIn = instances.signIn;
   if (instances.signUp) clerkSignUp = instances.signUp;
@@ -42,14 +73,22 @@ export function initializeAuthService(instances: {
 /**
  * Convert Clerk user to our UserProfile format
  */
-function mapClerkUserToProfile(clerkUser: any): UserProfile {
+function mapClerkUserToProfile(clerkUser: {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  fullName?: string | null;
+  primaryEmailAddress?: { emailAddress: string };
+  imageUrl?: string;
+  primaryPhoneNumber?: { phoneNumber: string };
+}): UserProfile {
   return {
     id: clerkUser.id,
-    firstName: clerkUser.firstName,
-    lastName: clerkUser.lastName,
-    fullName: clerkUser.fullName,
+    firstName: clerkUser.firstName || null,
+    lastName: clerkUser.lastName || null,
+    fullName: clerkUser.fullName || null,
     email: clerkUser.primaryEmailAddress?.emailAddress || '',
-    imageUrl: clerkUser.imageUrl,
+    imageUrl: clerkUser.imageUrl || '',
     phoneNumber: clerkUser.primaryPhoneNumber?.phoneNumber || null,
     isSignedIn: true,
     isLoaded: true,
@@ -64,7 +103,7 @@ export const authService = {
    * Sign in with email and password
    */
   async signIn(credentials: SignInCredentials): Promise<UserProfile> {
-    if (!clerkSignIn) {
+    if (!clerkSignIn || !clerkSetActive) {
       throw new Error('Auth service not initialized');
     }
 
@@ -73,18 +112,17 @@ export const authService = {
       password: credentials.password,
     });
 
-    if (result.status === 'complete') {
+    if (result.status === 'complete' && result.createdSessionId) {
       await clerkSetActive({ session: result.createdSessionId });
       
       // Return user profile
       return mapClerkUserToProfile(result.userData || {
         id: result.createdSessionId,
-        email: credentials.email,
+        primaryEmailAddress: { emailAddress: credentials.email },
         firstName: null,
         lastName: null,
         fullName: null,
         imageUrl: '',
-        primaryPhoneNumber: null,
       });
     }
 
@@ -95,9 +133,8 @@ export const authService = {
    * Sign out the current user
    */
   async signOut(): Promise<void> {
-    // Import dynamically to avoid SSR issues
-    const { useClerk } = await import('@clerk/nextjs');
-    const clerk = (window as any).__clerk_client;
+    // Access Clerk client directly from window
+    const clerk = (window as Window & { __clerk_client?: { signOut: () => Promise<void> } }).__clerk_client;
     
     if (clerk) {
       await clerk.signOut();
@@ -129,7 +166,7 @@ export const authService = {
    * Verify email with code
    */
   async verifyEmail(verification: EmailVerification): Promise<UserProfile> {
-    if (!clerkSignUp) {
+    if (!clerkSignUp || !clerkSetActive) {
       throw new Error('Auth service not initialized');
     }
 
@@ -137,18 +174,17 @@ export const authService = {
       code: verification.code,
     });
 
-    if (result.status === 'complete') {
+    if (result.status === 'complete' && result.createdSessionId) {
       await clerkSetActive({ session: result.createdSessionId });
       
       // Return user profile
       return mapClerkUserToProfile(result.userData || {
         id: result.createdSessionId,
-        email: result.emailAddress || '',
-        firstName: result.firstName,
-        lastName: result.lastName,
-        fullName: `${result.firstName || ''} ${result.lastName || ''}`.trim(),
+        primaryEmailAddress: { emailAddress: result.emailAddress || '' },
+        firstName: result.firstName || null,
+        lastName: result.lastName || null,
+        fullName: `${result.firstName || ''} ${result.lastName || ''}`.trim() || null,
         imageUrl: '',
-        primaryPhoneNumber: null,
       });
     }
 

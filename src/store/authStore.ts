@@ -213,7 +213,15 @@ export const useAuthStore = create<AuthStore>()(
       // Helper to parse errors from any source
       parseError: (error: unknown): AuthError => {
         if (typeof error === 'object' && error !== null) {
-          const err = error as any;
+          const err = error as {
+            errors?: Array<{
+              message: string;
+              longMessage?: string;
+              code?: string;
+              meta?: { paramName?: string };
+            }>;
+            message?: string;
+          };
           
           // Handle Clerk error format
           if (err.errors && Array.isArray(err.errors) && err.errors[0]) {

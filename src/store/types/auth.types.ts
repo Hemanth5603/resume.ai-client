@@ -67,6 +67,9 @@ export interface AuthActions {
   clearError: () => void;
   setPendingVerification: (pending: boolean) => void;
   setResetPasswordEmail: (email: string | null) => void;
+  
+  // Helper
+  parseError: (error: unknown) => AuthError;
 }
 
 export type AuthStore = AuthState & AuthActions;
