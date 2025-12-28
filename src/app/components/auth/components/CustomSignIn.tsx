@@ -30,7 +30,9 @@ const CustomSignIn = () => {
   };
 
   // Handle OAuth sign in
-  const handleOAuthSignIn = async (provider: "google" | "apple" | "linkedin_oidc") => {
+  const handleOAuthSignIn = async (
+    provider: "google" | "apple" | "linkedin_oidc"
+  ) => {
     try {
       await auth.signInWithOAuth({
         provider,
@@ -44,14 +46,16 @@ const CustomSignIn = () => {
 
   return (
     <div className={styles.splitContainer}>
-      <AuthLeftPanel />
-      
+      {/* <AuthLeftPanel /> */}
+
       <div className={styles.rightPanel}>
         <div className={styles.authCard}>
           {/* Header */}
           <div className={styles.authHeader}>
             <h1 className={styles.authTitle}>Welcome back</h1>
-            <p className={styles.authSubtitle}>Sign in to your account to continue</p>
+            <p className={styles.authSubtitle}>
+              Sign in to your account to continue
+            </p>
           </div>
 
           {/* Error Message */}
@@ -75,10 +79,10 @@ const CustomSignIn = () => {
                 id="email"
                 className={styles.input}
                 placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={auth.isLoading}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={auth.isLoading}
               />
             </div>
 
@@ -87,7 +91,10 @@ const CustomSignIn = () => {
                 <label htmlFor="password" className={styles.label}>
                   Password
                 </label>
-                <Link href="/auth/forgot-password" className={styles.forgotLink}>
+                <Link
+                  href="/auth/forgot-password"
+                  className={styles.forgotLink}
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -156,7 +163,10 @@ const CustomSignIn = () => {
               onClick={() => handleOAuthSignIn("linkedin_oidc")}
               disabled={auth.isLoading}
             >
-              <FaLinkedin className={styles.oauthIcon} style={{ color: "#0077B5" }} />
+              <FaLinkedin
+                className={styles.oauthIcon}
+                style={{ color: "#0077B5" }}
+              />
               <span>Continue with LinkedIn</span>
             </button>
           </div>
@@ -177,4 +187,3 @@ const CustomSignIn = () => {
 };
 
 export default CustomSignIn;
-
