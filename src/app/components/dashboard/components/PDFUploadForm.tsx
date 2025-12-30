@@ -38,6 +38,66 @@ export default function PDFUploadForm() {
           message: "The Requested Resume Format is not supported yet",
           details: "Please try again with a different file format."
         }
+      case 401:
+        return {
+          title: "Unauthorized",
+          message: "You are not authorized to access this resource.",
+          details: "Please login to your account to access this resource."
+        }
+      case 403:
+        return {
+          title: "Forbidden",
+          message: "You are not allowed to access this resource.",
+          details: "Please contact support to access this resource."
+        }
+      case 404:
+        return {
+          title: "Not Found",
+          message: "The requested resource was not found.",
+          details: "Please check the URL and try again."
+        }
+      case 405:
+        return {
+          title: "Method Not Allowed",
+          message: "The requested method is not allowed.",
+          details: "Please use a different method to access this resource."
+        }
+      case 406:
+        return {
+          title: "Not Acceptable",
+          message: "The requested resource is not acceptable.",
+          details: "Please use a different resource to access this resource."
+        }
+      case 500: 
+        return {
+          title: "Internal Server Error",
+          message: "An unexpected error occurred while processing your request.",
+          details: "Please try again later or contact support."
+        }
+      case 502:
+        return {
+          title: "Bad Gateway",
+          message: "The server is not responding to the request.",
+          details: "Please try again later or contact support."
+        }
+      case 503:
+        return {
+          title: "Service Unavailable",
+          message: "The server is currently unavailable.",
+          details: "Please try again later or contact support."
+        }
+      case 504:
+        return {
+          title: "Gateway Timeout",
+          message: "The server timed out while processing your request.",
+          details: "Please try again later or contact support."
+        }
+      case 505:
+        return {
+          title: "HTTP Version Not Supported",
+          message: "The server does not support the HTTP version used in the request.",
+          details: "Please use a different HTTP version to access this resource."
+        }
       default:
         return defaultError;
     }

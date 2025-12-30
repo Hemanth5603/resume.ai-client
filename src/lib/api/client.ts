@@ -1,177 +1,332 @@
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+  status_code: number;
+  message: string;
+  error?: string;
+  [key: string]: unknown;
+}
+
+// Header constants
+const HEADERS = {
+  JSON: {
+    'Content-Type': 'application/json',
+  },
+  FORM_DATA: {
+    'Content-Type': 'multipart/form-data',
+  },
+  FORM_URLENCODED: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
+} as const;
+
+// Helper function to create auth headers
+const createAuthHeaders = (token: string) => ({
+  Authorization: `Bearer ${token}`,
+});
+
 class ApiClient {
-  async request(endpoint: string, options: RequestInit = {}) {
-    const headers = {
-      "Content-Type": "application/json",
-      ...options.headers,
-    };
+  private axiosInstance: AxiosInstance;
 
-    const response = await fetch(endpoint, {
-      ...options,
-      headers,
+  // Expose header constants for external use
+  public readonly HEADERS = HEADERS;
+
+  constructor() {
+    // Create axios instance with default config
+    this.axiosInstance = axios.create({
+      headers: HEADERS.JSON,
+      // Transform response to handle both JSON and text
+      transformResponse: [(data, headers) => {
+        const contentType = headers?.['content-type'];
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            return typeof data === 'string' ? JSON.parse(data) : data;
+          } catch {
+            return data;
+          }
+        }
+        return data;
+      }],
     });
+  }
 
-    if (!response.ok) {
-      let errorMessage = "An unexpected error occured";
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let errorData: any = {};
-      const contentType = response.headers.get("Content-type");
-      if (response.status === 404) {
-        errorMessage = "Cannot process your request";
-      } else if (contentType && contentType.includes("application/json")) {
-        errorData = await response.json().catch(() => ({}));
-        errorMessage = errorData.error || errorData.message || errorMessage;
+  private handleError(error: AxiosError): ApiErrorResponse {
+    let errorMessage = 'An unexpected error occurred';
+    let statusCode = 500;
+    let errorData: Record<string, unknown> = {};
+
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      statusCode = error.response.status;
+      
+      if (statusCode === 404) {
+        errorMessage = 'Cannot process your request';
+      } else if (error.response.data) {
+        const responseData = error.response.data as Record<string, unknown>;
+        errorMessage = (responseData.error as string) || 
+                      (responseData.message as string) || 
+                      errorMessage;
+        errorData = responseData;
       }
-
-      throw {
-        status_code: response.status,
-        message: errorMessage || "An unexpected error occured",
-        ...errorData,
-      };
-    }
-    const contentType = response.headers.get("Content-type");
-    if (contentType && contentType.includes("application/json")) {
-      return await response.json();
+    } else if (error.request) {
+      // The request was made but no response was received
+      errorMessage = 'No response received from server';
     } else {
-      return await response.text();
+      // Something happened in setting up the request
+      errorMessage = error.message || errorMessage;
+    }
+
+    return {
+      status_code: statusCode,
+      message: errorMessage,
+      ...errorData,
+    };
+  }
+
+  /**
+   * Check if response contains an API-level error (even with 200 status)
+   * Throws error if error_code is present and not null
+   */
+  private checkResponseForErrors<T>(data: T): T {
+    if (data && typeof data === 'object') {
+      const responseData = data as Record<string, unknown>;
+      
+      // Check if error_code exists and is not null
+      if (responseData.error_code !== undefined && responseData.error_code !== null) {
+        const errorMessage = (responseData.error as string) || 
+                           (responseData.message as string) || 
+                           (responseData.data_error as string) || 
+                           'API returned an error';
+        
+        throw {
+          status_code: (responseData.error_code as number) || 
+                      (responseData.status_code as number) || 
+                      500,
+          message: errorMessage,
+          error_code: responseData.error_code,
+          ...responseData,
+        } as ApiErrorResponse;
+      }
+    }
+    
+    return data;
+  }
+
+  async request<T = unknown>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.request({
+        url: endpoint,
+        ...config,
+      });
+
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
     }
   }
 
-  async getWithToken(
+  async getWithToken<T = unknown>(
     endpoint: string,
     token: string,
-    options: RequestInit = {}
-  ) {
-    return this.request(endpoint, {
-      ...options,
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.get(endpoint, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+          ...createAuthHeaders(token),
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async getWithoutToken(endpoint: string, options: RequestInit = {}) {
-    return this.request(endpoint, options);
+  async getWithoutToken<T = unknown>(
+    endpoint: string,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.get(endpoint, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async postWithToken(
+  async postWithToken<T = unknown>(
     endpoint: string,
     token: string,
-    data: object,
-    options: RequestInit = {}
-  ) {
-    return this.request(endpoint, {
-      ...options,
-      method: "POST",
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
+    data: unknown,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+          ...createAuthHeaders(token),
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async postWithoutToken(
+  async postWithoutToken<T = unknown>(
     endpoint: string,
-    data: object,
-    options: RequestInit = {}
-  ) {
-    return this.request(endpoint, {
-      ...options,
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    data: unknown,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async postWithTokenFormData(
+  async postWithTokenFormData<T = unknown>(
     endpoint: string,
     token: string,
-    formData: BodyInit,
-    options: RequestInit = {}
-  ) {
-    // Remove Content-Type header to let browser set it with boundary for multipart/form-data
-    const { headers, ...restOptions } = options;
-    const filteredHeaders = headers ? { ...headers } : {};
-
-    return fetch(endpoint, {
-      ...restOptions,
-      method: "POST",
-      headers: {
-        ...filteredHeaders,
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    }).then(async (response) => {
-      if (!response.ok) {
-        let errorMessage = "An unexpected error occurred";
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let errorData: any = {};
-        const contentType = response.headers.get("Content-type");
-        if (response.status === 404) {
-          errorMessage = "Cannot process your request";
-        } else if (contentType && contentType.includes("application/json")) {
-          errorData = await response.json().catch(() => ({}));
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        }
-
-        throw {
-          status_code: response.status,
-          message: errorMessage,
-          ...errorData,
-        };
-      }
-
-      const contentType = response.headers.get("Content-type");
-      if (contentType && contentType.includes("application/json")) {
-        return await response.json();
-      } else {
-        return await response.text();
-      }
-    });
+    formData: FormData,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      // Axios automatically sets the correct Content-Type for FormData
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, formData, {
+        ...config,
+        headers: {
+          ...HEADERS.FORM_DATA,
+          ...config.headers,
+          ...createAuthHeaders(token),
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 
-  async postWithoutTokenFormData(
+  async postWithoutTokenFormData<T = unknown>(
     endpoint: string,
-    formData: BodyInit,
-    options: RequestInit = {}
-  ) {
-    // Remove Content-Type header to let browser set it with boundary for multipart/form-data
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { headers, ...restOptions } = options;
+    formData: FormData,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, formData, {
+        ...config,
+        headers: {
+          ...HEADERS.FORM_DATA,
+          ...config.headers,
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      const apiError = this.handleError(error as AxiosError);
+      // Return error in expected format instead of throwing
+      const errorResponse = {
+        ...apiError,
+        status_code: apiError.status_code || 500,
+        message: apiError.message || 'An unexpected error occurred',
+      };
+      return errorResponse as T;
+    }
+  }
 
-    return fetch(endpoint, {
-      ...restOptions,
-      method: "POST",
-      body: formData,
-    }).then(async (response) => {
-      if (!response.ok) {
-        let errorMessage = "An unexpected error occurred";
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let errorData: any = {};
-        const contentType = response.headers.get("Content-type");
-        if (response.status === 404) {
-          errorMessage = "Cannot process your request";
-        } else if (contentType && contentType.includes("application/json")) {
-          errorData = await response.json().catch(() => ({}));
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        }
+  // Additional utility methods
+  async putWithToken<T = unknown>(
+    endpoint: string,
+    token: string,
+    data: unknown,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.put(endpoint, data, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+          ...createAuthHeaders(token),
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
 
-        throw {
-          status_code: response.status,
-          message: errorMessage,
-          ...errorData,
-        };
-      }
+  async deleteWithToken<T = unknown>(
+    endpoint: string,
+    token: string,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.delete(endpoint, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+          ...createAuthHeaders(token),
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
+  }
 
-      const contentType = response.headers.get("Content-type");
-      if (contentType && contentType.includes("application/json")) {
-        return await response.json();
-      } else {
-        return await response.text();
-      }
-    });
+  async patchWithToken<T = unknown>(
+    endpoint: string,
+    token: string,
+    data: unknown,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.patch(endpoint, data, {
+        ...config,
+        headers: {
+          ...HEADERS.JSON,
+          ...config.headers,
+          ...createAuthHeaders(token),
+        },
+      });
+      
+      return this.checkResponseForErrors(response.data);
+    } catch (error) {
+      throw this.handleError(error as AxiosError);
+    }
   }
 }
 
 const apiClient = new ApiClient();
+
+// Export both the instance and header constants
 export default apiClient;
+export { HEADERS, createAuthHeaders };
