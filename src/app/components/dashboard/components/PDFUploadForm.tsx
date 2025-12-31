@@ -23,85 +23,88 @@ export default function PDFUploadForm() {
     const defaultError = {
       title: "Internal Server Error!!",
       message: "Failed to generate resume for you..",
-      details: "Unexpected Error occured while we processing your request."
-    }
-    switch(statusCode) {
+      details: "Unexpected Error occured while we processing your request.",
+    };
+    switch (statusCode) {
       case 402:
         return {
           title: "Payment Required",
           message: "Failed to generate resume for you..",
-          details: "You are trying to access a paid resource."
-        }
+          details: "You are trying to access a paid resource.",
+        };
       case 420:
         return {
           title: "Format Not Supported",
           message: "The Requested Resume Format is not supported yet",
-          details: "Please try again with a different file format."
-        }
+          details: "Please try again with a different file format.",
+        };
       case 401:
         return {
           title: "Unauthorized",
           message: "You are not authorized to access this resource.",
-          details: "Please login to your account to access this resource."
-        }
+          details: "Please login to your account to access this resource.",
+        };
       case 403:
         return {
           title: "Forbidden",
           message: "You are not allowed to access this resource.",
-          details: "Please contact support to access this resource."
-        }
+          details: "Please contact support to access this resource.",
+        };
       case 404:
         return {
           title: "Not Found",
           message: "The requested resource was not found.",
-          details: "Please check the URL and try again."
-        }
+          details: "Please check the URL and try again.",
+        };
       case 405:
         return {
           title: "Method Not Allowed",
           message: "The requested method is not allowed.",
-          details: "Please use a different method to access this resource."
-        }
+          details: "Please use a different method to access this resource.",
+        };
       case 406:
         return {
           title: "Not Acceptable",
           message: "The requested resource is not acceptable.",
-          details: "Please use a different resource to access this resource."
-        }
-      case 500: 
+          details: "Please use a different resource to access this resource.",
+        };
+      case 500:
         return {
-          title: "Internal Server Error",
-          message: "An unexpected error occurred while processing your request.",
-          details: "Please try again later or contact support."
-        }
+          title: "Hold On!",
+          message:
+            "We are trying hard to bring support for more resume formats",
+          details: "Please try again later or contact support.",
+        };
       case 502:
         return {
           title: "Bad Gateway",
           message: "The server is not responding to the request.",
-          details: "Please try again later or contact support."
-        }
+          details: "Please try again later or contact support.",
+        };
       case 503:
         return {
           title: "Service Unavailable",
           message: "The server is currently unavailable.",
-          details: "Please try again later or contact support."
-        }
+          details: "Please try again later or contact support.",
+        };
       case 504:
         return {
           title: "Gateway Timeout",
           message: "The server timed out while processing your request.",
-          details: "Please try again later or contact support."
-        }
+          details: "Please try again later or contact support.",
+        };
       case 505:
         return {
           title: "HTTP Version Not Supported",
-          message: "The server does not support the HTTP version used in the request.",
-          details: "Please use a different HTTP version to access this resource."
-        }
+          message:
+            "The server does not support the HTTP version used in the request.",
+          details:
+            "Please use a different HTTP version to access this resource.",
+        };
       default:
         return defaultError;
     }
-  }; 
+  };
 
   // Error modal state
   const [errorModal, setErrorModal] = useState<{
@@ -174,7 +177,9 @@ export default function PDFUploadForm() {
       const err = error as ApiError;
       console.error("Resume Parser API Error:", err);
 
-      const { title, message, details } = getErrorFromStatusCode(err?.status_code ?? err?.error_code);
+      const { title, message, details } = getErrorFromStatusCode(
+        err?.status_code ?? err?.error_code
+      );
 
       setErrorModal({
         isOpen: true,
