@@ -287,6 +287,8 @@ export default function PDFUploadForm() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              cursor: "pointer",
+              color: "black"
             }}
           >
             DOWNLOAD RESUME
@@ -305,7 +307,6 @@ export default function PDFUploadForm() {
           </div>
         )}
 
-        {success && <p className={styles.success}>Upload successful!</p>}
         {error && <p className={styles.error}>{error}</p>}
       </div>
 
