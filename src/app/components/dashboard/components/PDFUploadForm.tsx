@@ -119,6 +119,14 @@ export default function PDFUploadForm() {
     details: undefined,
   });
 
+  const disableSubmit = loading || selectedJobRoles.length === 0;
+
+  const getDisabledReason = () => {
+    if (loading) return "Processing your resume...";
+    if (selectedJobRoles.length === 0) return "Please select at least one job role";
+    return "";
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     const allowedTypes = [
@@ -285,14 +293,16 @@ export default function PDFUploadForm() {
             <RxMagicWand scale={4} />
           </a>
         ) : (
-          <button
-            className={styles.getResumeButton}
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? "PROCESSING..." : "GET RESUME"}
-            <RxMagicWand scale={4} />
-          </button>
+          <div className={styles.buttonWrapper} data-tooltip={disableSubmit ? getDisabledReason() : ""}>
+            <button
+              className={styles.getResumeButton}
+              onClick={handleSubmit}
+              disabled={disableSubmit}
+            >
+              {loading ? "PROCESSING..." : "GET RESUME"}
+              <RxMagicWand scale={4} />
+            </button>
+          </div>
         )}
 
         {success && <p className={styles.success}>Upload successful!</p>}

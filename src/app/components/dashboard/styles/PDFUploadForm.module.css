@@ -211,6 +211,48 @@
 /* Google Icons styling is handled by .googleIcon class above */
 
 /* Get Resume Button */
+.buttonWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip */
+.buttonWrapper[data-tooltip]:not([data-tooltip=""]):hover::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 0.75rem 1rem;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 2px solid #1a1a1a;
+  box-shadow: 3px 3px 0px rgba(26, 26, 26, 0.3);
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease-in-out;
+}
+
+/* Tooltip arrow */
+.buttonWrapper[data-tooltip]:not([data-tooltip=""]):hover::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0px;
+  border: 6px solid transparent;
+  border-top-color: #1a1a1a;
+  z-index: 1000;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease-in-out;
+}
+
 .getResumeButton {
   background: linear-gradient(135deg, #ffc2d7 0%, #beadff 100%);
   color: #ffffff;
@@ -371,5 +413,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
