@@ -49,7 +49,6 @@ const MultiSelectJobRoles: React.FC<MultiSelectJobRolesProps> = ({
     } else {
       onChange([...selectedRoles, role]);
     }
-    setSearchTerm("");
   };
 
   if (loading) {

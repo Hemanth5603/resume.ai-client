@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FaRobot } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import styles from "../styles/PDFUploadForm.module.css";
@@ -8,6 +8,7 @@ import useResumeParser from "../hooks/useResumeParser";
 import { RxMagicWand } from "react-icons/rx";
 import MultiSelectJobRoles from "./MultiSelectJobRoles";
 import { ErrorModal } from "@/components/ui/error-modal";
+import Toast from "../../../styled_components/Toast";
 import type { ApiError } from "@/lib/api/types/resume.types";
 
 export default function PDFUploadForm() {
@@ -18,6 +19,16 @@ export default function PDFUploadForm() {
   const [progress, setProgress] = useState(0);
   const { parseResume, loading, error, data } = useResumeParser();
   const success = !!data;
+  const [showToast, setShowToast] = useState(false);
+  const [hasShownToast, setHasShownToast] = useState(false);
+
+  // Show toast when download becomes available
+  useEffect(() => {
+    if (success && data?.gcs_url && !hasShownToast) {
+      setShowToast(true);
+      setHasShownToast(true);
+    }
+  }, [success, data?.gcs_url, hasShownToast]);
 
   const getErrorFromStatusCode = (statusCode: number) => {
     const defaultError = {
@@ -309,6 +320,13 @@ export default function PDFUploadForm() {
 
         {error && <p className={styles.error}>{error}</p>}
       </div>
+
+      <Toast
+        message="Your resume is ready! Click the button above to download."
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+        duration={5000}
+      />
 
       <ErrorModal
         isOpen={errorModal.isOpen}
