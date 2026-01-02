@@ -62,7 +62,7 @@ const MultiSelectJobRoles: React.FC<MultiSelectJobRolesProps> = ({
 
   return (
     <div className={styles.container}>
-      <label className={styles.label}>Select Job Roles:</label>
+      <label className={styles.label}>Related Job Roles:</label>
 
       <div className={styles.searchContainer}>
         <IoSearchOutline className={styles.searchIcon} />
