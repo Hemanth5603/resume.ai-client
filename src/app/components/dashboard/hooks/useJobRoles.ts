@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@clerk/nextjs";
-import resumeService from "@/lib/api/services/resumeService";
+//import { useAuth } from "@clerk/nextjs";
+import { JOB_ROLES } from "@/app/constants/job_roles";
+//import resumeService from "@/lib/api/services/resumeService";
 
 /**
  * Custom hook for fetching unique job roles
  */
 const useJobRoles = () => {
-  const { getToken } = useAuth();
+  //const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [jobRoles, setJobRoles] = useState<string[]>([]);
@@ -20,11 +21,11 @@ const useJobRoles = () => {
 
     try {
       // Get authentication token (optional based on your API requirements)
-      const token = await getToken();
+      //const token = await getToken();
 
-      const response = await resumeService.getJobRoles(token || undefined);
-      setJobRoles(response.job_roles);
-      return response.job_roles;
+      //const response = await resumeService.getJobRoles(token || undefined);
+      setJobRoles(JOB_ROLES); // Get job roles from constants
+      return JOB_ROLES;
     } catch (err: unknown) {
       console.error("Error fetching job roles:", err);
       // Fallback mock data for development when API is down
@@ -48,7 +49,6 @@ const useJobRoles = () => {
    */
   useEffect(() => {
     fetchJobRoles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
