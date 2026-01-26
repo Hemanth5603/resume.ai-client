@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-//import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { JOB_ROLES } from "@/app/constants/job_roles";
-//import resumeService from "@/lib/api/services/resumeService";
+import resumeService from "@/lib/api/services/resumeService";
+import type { JobRolesResponse } from "@/lib/api/types/resume.types";
 
 /**
  * Custom hook for fetching unique job roles
  */
 const useJobRoles = () => {
-  //const { getToken } = useAuth();
+  const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [jobRoles, setJobRoles] = useState<string[]>([]);
@@ -21,24 +22,31 @@ const useJobRoles = () => {
 
     try {
       // Get authentication token (optional based on your API requirements)
-      //const token = await getToken();
+      const token = await getToken();
 
-      //const response = await resumeService.getJobRoles(token || undefined);
-      setJobRoles(JOB_ROLES); // Get job roles from constants
-      return JOB_ROLES;
+      // Fetch job roles from API
+      const response: JobRolesResponse = await resumeService.getJobRoles(
+        token || undefined
+      );
+
+      // Extract job roles from API response
+      if (response && response.job_roles && Array.isArray(response.job_roles)) {
+        setJobRoles(response.job_roles);
+        return response.job_roles;
+      } else {
+        // If response structure is unexpected, fallback to constants
+        console.warn("Unexpected API response structure, using fallback data");
+        setJobRoles(JOB_ROLES);
+        return JOB_ROLES;
+      }
     } catch (err: unknown) {
       console.error("Error fetching job roles:", err);
-      // Fallback mock data for development when API is down
-      setJobRoles([
-        "Full Stack Developer",
-        "Frontend Developer",
-        "Backend Developer",
-        "Product Designer",
-        "UI/UX Designer",
-        "DevOps Engineer",
-      ]);
-      setError(null); // Clear error to show mock data
-      // Do not re-throw, let the UI handle the error state
+      // Fallback to hardcoded constants when API is down
+      setJobRoles(JOB_ROLES);
+      setError(
+        "Failed to load job roles from server. Using cached data."
+      );
+      return JOB_ROLES;
     } finally {
       setLoading(false);
     }
