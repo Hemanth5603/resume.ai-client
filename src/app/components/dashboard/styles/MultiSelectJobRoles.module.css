@@ -1,17 +1,74 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   width: 100%;
-  margin-top: 1rem;
+  max-width: 700px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 2px solid #1a1a1a;
+  padding: 1.25rem;
+  border-radius: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  box-shadow: 4px 4px 0px #1a1a1a;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.sparkleIcon {
+  font-size: 1.25rem;
+  color: #1a1a1a;
+  flex-shrink: 0;
 }
 
 .label {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #333;
+  color: #1a1a1a;
+  font-family: var(--font-poppins), sans-serif;
+  line-height: 1.4;
 }
 
+.clearButton {
+  background: #ffffff;
+  border: 2px solid #1a1a1a;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-poppins), sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0px #1a1a1a;
+  transform: translate(0, 0);
+  color: #1a1a1a;
+}
+
+.clearButton:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 1px 1px 0px #dc2626;
+  transform: translate(1px, 1px);
+}
+
+/* Search Container */
 .searchContainer {
   position: relative;
   width: 100%;
@@ -19,118 +76,275 @@
 
 .searchInput {
   width: 100%;
-  padding: 0.5rem 0.5rem 0.5rem 2rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+  border: 2px solid #1a1a1a;
+  border-radius: 0;
   font-size: 0.9rem;
+  font-family: var(--font-poppins), sans-serif;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 0px #1a1a1a;
+  transform: translate(0, 0);
+  color: #1a1a1a;
 }
 
 .searchInput:focus {
-  border-color: #2196f3;
+  border-color: #1a1a1a;
+  box-shadow: 2px 2px 0px #1a1a1a;
+  transform: translate(2px, 2px);
 }
 
 .searchIcon {
   position: absolute;
-  left: 0.6rem;
+  left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #888;
-  font-size: 1rem;
+  color: #9ca3af;
+  font-size: 1.1rem;
   pointer-events: none;
+  z-index: 1;
 }
 
-.optionsContainer {
+.clearSearchButton {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fee2e2;
+  border: 1px solid #dc2626;
+  padding: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #dc2626;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.clearSearchButton:hover {
+  background: #fecaca;
+}
+
+/* Chips Container */
+.chipsContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  max-height: 200px;
+  height: 320px;
   overflow-y: auto;
-  padding: 0.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  overflow-x: hidden;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 2px solid #1a1a1a;
+  box-sizing: border-box;
+  border-radius: 0;
+  align-content: flex-start;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: 2px 2px 0px #1a1a1a;
 }
 
-.option {
-  display: flex;
+.chipsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chipsContainer::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.chipsContainer::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.chipsContainer::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Chip Item */
+.chip {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  background: #ffffff;
+  border: 2px solid #1a1a1a;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.85rem;
+  font-family: var(--font-poppins), sans-serif;
+  font-weight: 500;
   user-select: none;
-  height: 2.5rem;
+  border-radius: 0;
+  white-space: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0px #1a1a1a;
+  transform: translate(0, 0);
+  color: #1a1a1a;
 }
 
-.option:hover {
-  background-color: #f0f0f0;
-  border-color: #ccc;
+.chip:hover {
+  border-color: #1a1a1a;
+  background: #f9fafb;
+  box-shadow: 1px 1px 0px #1a1a1a;
+  transform: translate(1px, 1px);
 }
 
-.selected {
-  background-color: #e3f2fd;
-  border-color: #2196f3;
-  color: #1976d2;
+/* Selected Chip */
+.chipSelected {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 2px 2px 0px #1a1a1a;
+}
+
+.chipSelected:hover {
+  background: #000000;
+  border-color: #000000;
+  box-shadow: 1px 1px 0px #000000;
+  transform: translate(1px, 1px);
+}
+
+.chipCheckIcon {
+  color: #ffffff;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.chipRemoveIcon {
+  color: #dc2626;
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-left: 0.15rem;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.chipSelected:hover .chipRemoveIcon {
+  opacity: 1;
+}
+
+.chipText {
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* No Results */
+.noResults {
+  width: 100%;
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  padding: 1.5rem;
+  background: #fef3c7;
+  border: 1px dashed #f59e0b;
+  border-radius: 6px;
+}
+
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.9rem;
+  color: #6b7280;
   font-weight: 500;
 }
 
-.noResults {
+/* Error Container */
+.errorContainer {
+  padding: 1rem;
+  background: #fee2e2;
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+}
+
+.errorText {
   font-family: var(--font-poppins), sans-serif;
   font-size: 0.9rem;
-  color: #1a1a1a;
-  text-align: center;
-  margin-top: 1rem;
-  width: 100%
-}
-
-.checkbox {
-  display: none;
-}
-
-.loading, .error {
-  font-size: 0.85rem;
-  color: #666;
-  padding: 0.5rem;
-}
-
-.error {
-  color: #d32f2f;
+  color: #991b1b;
+  font-weight: 600;
 }
 
 /* Mobile responsive styles */
 @media (max-width: 768px) {
   .container {
-    gap: 0.75rem;
-    margin-top: 1.5rem;
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .clearButton {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.6rem;
+    align-self: flex-start;
   }
 
   .searchInput {
-    padding: 0.6rem 0.6rem 0.6rem 2.2rem;
+    padding: 0.65rem 2.2rem 0.65rem 2.2rem;
     font-size: 0.85rem;
   }
 
   .searchIcon {
-    left: 0.7rem;
-    font-size: 0.95rem;
+    left: 0.65rem;
+    font-size: 1rem;
   }
 
-  .optionsContainer {
-    max-height: 180px;
-    padding: 0.75rem;
+  .chipsContainer {
+    height: 280px;
+    padding: 0.65rem;
+    gap: 0.45rem;
   }
 
-  .option {
-    padding: 0.4rem 0.6rem;
+  .chip {
+    padding: 0.45rem 0.75rem;
     font-size: 0.8rem;
+  }
+
+  .chipCheckIcon {
+    font-size: 0.85rem;
+  }
+
+  .chipRemoveIcon {
+    font-size: 0.9rem;
   }
 }

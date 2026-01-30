@@ -9,10 +9,138 @@
 /* Left Panel */
 .leftPanel {
   flex: 1;
-  background: #ffffff url('/assets/images/Eclipse.png') no-repeat center center;
-  background-size: cover;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: 100vh;
   border-right: 2px solid #1a1a1a;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftPanelContent {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  z-index: 1;
+}
+
+.patternOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.patternSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.illustrationContainer {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 3rem;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.mainIllustration {
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+}
+
+.leftPanelText {
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+.leftPanelTitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.5px;
+}
+
+.leftPanelSubtitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1.125rem;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.floatingElements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.floatingCircle1,
+.floatingCircle2,
+.floatingCircle3 {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  opacity: 0.1;
+  animation: floatCircle 20s ease-in-out infinite;
+}
+
+.floatingCircle1 {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  left: -50px;
+  animation-delay: 0s;
+}
+
+.floatingCircle2 {
+  width: 150px;
+  height: 150px;
+  bottom: 20%;
+  right: -30px;
+  animation-delay: 5s;
+}
+
+.floatingCircle3 {
+  width: 100px;
+  height: 100px;
+  top: 60%;
+  left: 10%;
+  animation-delay: 10s;
+}
+
+@keyframes floatCircle {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
 }
 
 /* Right Panel - Auth Form */
@@ -396,6 +524,29 @@
     border-bottom: 2px solid #1a1a1a;
   }
 
+  .illustrationContainer {
+    margin-bottom: 1.5rem;
+  }
+
+  .mainIllustration {
+    width: 200px;
+    height: 200px;
+  }
+
+  .leftPanelTitle {
+    font-size: 1.75rem;
+  }
+
+  .leftPanelSubtitle {
+    font-size: 0.95rem;
+  }
+
+  .floatingCircle1,
+  .floatingCircle2,
+  .floatingCircle3 {
+    display: none;
+  }
+
   .rightPanel {
     flex: 1;
   }
@@ -404,6 +555,19 @@
 @media (max-width: 640px) {
   .leftPanel {
     min-height: 150px;
+  }
+
+  .mainIllustration {
+    width: 150px;
+    height: 150px;
+  }
+
+  .leftPanelTitle {
+    font-size: 1.5rem;
+  }
+
+  .leftPanelSubtitle {
+    font-size: 0.875rem;
   }
 
   .rightPanel {

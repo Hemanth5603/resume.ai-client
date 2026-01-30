@@ -1,0 +1,138 @@
+.wizardContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  position: relative;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Step Content */
+.stepContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.stepContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.stepContent::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.stepContent::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.stepContent::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Navigation */
+.navigationContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.spacer {
+  display: none;
+}
+
+.backButton,
+.nextButton,
+.generateButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  font-family: var(--font-poppins), sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 2px solid #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 0;
+  box-shadow: 4px 4px 0px #1a1a1a;
+  transform: translate(0, 0);
+}
+
+.backButton {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.backButton:hover {
+  background: #f9fafb;
+  box-shadow: 2px 2px 0px #1a1a1a;
+  transform: translate(2px, 2px);
+}
+
+.nextButton {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.nextButton:hover:not(:disabled) {
+  background: #000000;
+  box-shadow: 2px 2px 0px #000000;
+  transform: translate(2px, 2px);
+}
+
+.nextButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e5e7eb;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  box-shadow: 2px 2px 0px #e5e7eb;
+}
+
+.generateButton {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.generateButton:hover:not(:disabled) {
+  background: #000000;
+  box-shadow: 2px 2px 0px #000000;
+  transform: translate(2px, 2px);
+}
+
+.generateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #e5e7eb;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  box-shadow: 2px 2px 0px #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wizardContainer {
+    padding: 0 0.5rem;
+    min-height: calc(100vh - 60px);
+  }
+
+  .navigationContainer {
+    flex-wrap: wrap;
+  }
+
+  .backButton,
+  .nextButton,
+  .generateButton {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.85rem;
+  }
+}

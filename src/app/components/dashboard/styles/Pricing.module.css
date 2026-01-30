@@ -1,0 +1,81 @@
+.pricingContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  font-family: var(--font-poppins), sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+}
+
+.comingSoonCard {
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 4rem 3rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.iconWrapper {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.icon {
+  color: #3b82f6;
+  opacity: 0.8;
+}
+
+.comingSoonTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1.5rem 0;
+}
+
+.comingSoonText {
+  font-size: 1.125rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0 0 1rem 0;
+}
+
+.comingSoonSubtext {
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+
+@media (max-width: 768px) {
+  .pricingContainer {
+    padding: 2rem 1rem;
+    min-height: calc(100vh - 150px);
+  }
+
+  .comingSoonCard {
+    padding: 3rem 2rem;
+  }
+
+  .comingSoonTitle {
+    font-size: 2rem;
+  }
+
+  .comingSoonText {
+    font-size: 1rem;
+  }
+
+  .comingSoonSubtext {
+    font-size: 0.95rem;
+  }
+
+  .icon {
+    width: 60px;
+    height: 60px;
+  }
+}
