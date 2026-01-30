@@ -28,6 +28,9 @@ export default function Navbar() {
 
         <div className={styles.right}>
           <div className={styles.center}>
+            <Link href="/" className={styles.link}>
+              Home
+            </Link>
             <Link href="/pricing" className={styles.link}>
               Pricing
             </Link>

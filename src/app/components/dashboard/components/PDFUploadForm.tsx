@@ -9,6 +9,7 @@ import { RxMagicWand } from "react-icons/rx";
 import MultiSelectJobRoles from "./MultiSelectJobRoles";
 import { ErrorModal } from "@/components/ui/error-modal";
 import Toast from "../../../styled_components/Toast";
+import ProcessingAnimation from "./ProcessingAnimation";
 import type { ApiError } from "@/lib/api/types/resume.types";
 
 export default function PDFUploadForm() {
@@ -16,6 +17,7 @@ export default function PDFUploadForm() {
   const [description, setDescription] = useState("");
   const [selectedJobRoles, setSelectedJobRoles] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(0);
   const { parseResume, loading, error, data } = useResumeParser();
   const success = !!data;
@@ -29,6 +31,18 @@ export default function PDFUploadForm() {
       setHasShownToast(true);
     }
   }, [success, data?.gcs_url, hasShownToast]);
+
+  // Auto-resize textarea like ChatGPT
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = "auto";
+      // Set the height to scrollHeight (content height)
+      const newHeight = Math.min(textarea.scrollHeight, 400); // Max height: 400px
+      textarea.style.height = `${newHeight}px`;
+    }
+  }, [description]);
 
   const getErrorFromStatusCode = (statusCode: number) => {
     const defaultError = {
@@ -227,10 +241,12 @@ export default function PDFUploadForm() {
       <div className={styles.formSection}>
         <div className={styles.textareaSection}>
           <textarea
+            ref={textareaRef}
             className={styles.textarea}
             placeholder="Give Your Job Description and Key Responsibilities."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            rows={1}
           />
           <div className={styles.textareaFooter}>
             <span className={styles.upgradeText}>
@@ -273,14 +289,7 @@ export default function PDFUploadForm() {
           </div>
         )}
 
-        {loading && (
-          <div className={styles.progressBarContainer}>
-            <div
-              className={styles.progressBar}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        )}
+        {loading && <ProcessingAnimation progress={progress} />}
 
         <MultiSelectJobRoles
           selectedRoles={selectedJobRoles}
@@ -295,11 +304,6 @@ export default function PDFUploadForm() {
             rel="noopener noreferrer"
             style={{
               textDecoration: "none",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              color: "black"
             }}
           >
             DOWNLOAD RESUME

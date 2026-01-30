@@ -32,10 +32,11 @@
   height: 400px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   position: relative;
-  transition: border-color 300ms;
+  transition: all 300ms ease;
   cursor: default;
+  overflow: hidden;
 }
 
 .card:hover {
@@ -66,25 +67,41 @@
 }
 
 .cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  position: relative;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  min-height: 150px;
 }
 
-.iconWrapper {
-  color: black;
-  opacity: 0.8;
-  transition: opacity 150ms;
+.illustrationWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.card:hover .iconWrapper {
-  opacity: 1;
+.illustration {
+  width: 100%;
+  max-width: 120px;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .illustration {
+  transform: scale(1.05);
 }
 
 .plusIcon {
+  position: absolute;
+  top: 0;
+  right: 0;
   color: #d1d5db; /* gray-300 */
   transition: color 150ms;
+  font-size: 1.25rem;
 }
 
 .card:hover .plusIcon {
@@ -92,7 +109,11 @@
 }
 
 .cardContent {
-  margin-top: auto;
+  margin-top: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .title {

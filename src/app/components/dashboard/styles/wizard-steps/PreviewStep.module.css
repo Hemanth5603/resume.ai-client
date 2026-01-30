@@ -1,0 +1,265 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  animation: fadeIn 0.3s ease-out;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.successBanner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: #d1fae5;
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 700px;
+}
+
+.successIcon {
+  font-size: 2rem;
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.successContent {
+  flex: 1;
+}
+
+.successTitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 0.25rem 0;
+}
+
+.successSubtitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.9rem;
+  color: #059669;
+  margin: 0;
+}
+
+.previewCard {
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 700px;
+}
+
+.previewHeader {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  text-align: center;
+}
+
+.previewTitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem 0;
+}
+
+.previewSubtitle {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.iframeContainer {
+  width: 100%;
+  height: 500px;
+  background: #f9fafb;
+  position: relative;
+}
+
+.iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  pointer-events: auto;
+  /* Prevent pop-out by restricting iframe capabilities */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.noPreview {
+  width: 100%;
+  height: 500px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.noPreviewContent {
+  text-align: center;
+  max-width: 400px;
+}
+
+.noPreviewIcon {
+  font-size: 3rem;
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+
+.noPreviewText {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.noPreviewSubtext {
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+}
+
+.viewLink {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-poppins), sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  text-decoration: none;
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.viewLink:hover {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem 1.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.downloadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  font-family: var(--font-poppins), sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 2px solid #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 3px 3px 0px #1a1a1a;
+}
+
+.downloadButton:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #1a1a1a;
+}
+
+.downloadButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+  }
+
+  .successBanner {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .successIcon {
+    font-size: 1.75rem;
+  }
+
+  .successTitle {
+    font-size: 1.1rem;
+  }
+
+  .successSubtitle {
+    font-size: 0.85rem;
+  }
+
+  .previewCard {
+    max-width: 100%;
+  }
+
+  .previewHeader {
+    padding: 1rem;
+  }
+
+  .previewTitle {
+    font-size: 1rem;
+  }
+
+  .iframeContainer {
+    height: 400px;
+  }
+
+  .noPreview {
+    height: 400px;
+    padding: 1.5rem;
+  }
+
+  .noPreviewIcon {
+    font-size: 2.5rem;
+  }
+
+  .noPreviewText {
+    font-size: 0.95rem;
+  }
+
+  .noPreviewSubtext {
+    font-size: 0.8rem;
+  }
+
+  .actionButtons {
+    padding: 1rem;
+  }
+
+  .downloadButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.85rem;
+  }
+}

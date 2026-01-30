@@ -1,6 +1,6 @@
 "use client";
 
-import PDFUploadForm from "./PDFUploadForm";
+import ResumeWizard from "./ResumeWizard";
 import Footer from "./Footer";
 import styles from "../styles/Dashboard.module.css";
 import { useUserFromStore } from "@/store";
@@ -19,7 +19,7 @@ const Dashboard = () => {
         {!isSignedIn ?
           <HeroSection />
          : 
-          <PDFUploadForm />
+          <ResumeWizard />
         }
       </main>
       <Footer />
