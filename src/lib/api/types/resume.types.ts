@@ -30,3 +30,19 @@ export interface ApiError {
 export interface JobRolesResponse {
   job_roles: string[];
 }
+
+/**
+ * Request payload for editing resume with AI
+ */
+export interface EditResumeRequest {
+  resume_url: string;
+  user_instruction: string;
+}
+
+/**
+ * Response from edit resume API
+ */
+export interface EditResumeResponse {
+  gcs_url: string;
+  message?: string;
+}

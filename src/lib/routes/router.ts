@@ -14,4 +14,7 @@ export const routes = {
   GET_JOB_ROLES: useProxy
     ? "/api/proxy/get_job_roles"
     : `${resumeApiHost}/api/v1/get_job_roles`,
+  EDIT_RESUME: useProxy
+    ? "/api/proxy/edit_resume_chat"
+    : `${resumeApiHost}/api/v1/edit_resume_chat`,
 };

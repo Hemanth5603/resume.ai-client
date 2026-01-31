@@ -8,10 +8,12 @@ import JobDescriptionStep from "./wizard-steps/JobDescriptionStep";
 import JobRolesStep from "./wizard-steps/JobRolesStep";
 import ResumeUploadStep from "./wizard-steps/ResumeUploadStep";
 import ProcessingStep from "./wizard-steps/ProcessingStep";
-import PreviewStep from "./wizard-steps/PreviewStep";
+import PreviewStep, { EditMode } from "./wizard-steps/PreviewStep";
+import EditWithAIStep from "./wizard-steps/EditWithAIStep";
 import useResumeParser from "../hooks/useResumeParser";
 import { ErrorModal } from "@/components/ui/error-modal";
 import type { ApiError } from "@/lib/api/types/resume.types";
+import resumeService from "@/lib/api/services/resumeService";
 
 export default function ResumeWizard() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -19,7 +21,10 @@ export default function ResumeWizard() {
   const [selectedJobRoles, setSelectedJobRoles] = useState<string[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
-  const { parseResume, loading, error, data } = useResumeParser();
+  const [editMode, setEditMode] = useState<EditMode>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedResumeUrl, setEditedResumeUrl] = useState<string | null>(null);
+  const { parseResume, loading, data } = useResumeParser();
   
   const [errorModal, setErrorModal] = useState<{
     isOpen: boolean;
@@ -99,8 +104,7 @@ export default function ResumeWizard() {
     }, 150);
 
     try {
-      const response = await parseResume(file, jobDescription, selectedJobRoles);
-      console.log("Resume Parser API Response:", response);
+      await parseResume(file, jobDescription, selectedJobRoles);
     } catch (error: unknown) {
       const err = error as ApiError;
       console.error("Resume Parser API Error:", err);
@@ -168,69 +172,235 @@ export default function ResumeWizard() {
     setSelectedJobRoles([]);
     setFile(null);
     setProgress(0);
+    setEditMode(null);
+    setEditedResumeUrl(null);
   };
+
+  const handleEditModeChange = (mode: EditMode) => {
+    setEditMode(mode);
+  };
+
+  const handleBackFromEdit = () => {
+    setEditMode(null);
+    setEditedResumeUrl(null);
+  };
+
+  // Helper to clean URL (remove cache-busting params)
+  const cleanResumeUrl = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      urlObj.searchParams.delete('_t');
+      const cleanUrl = urlObj.origin + urlObj.pathname;
+      const searchParams = urlObj.searchParams.toString();
+      return searchParams ? `${cleanUrl}?${searchParams}` : cleanUrl;
+    } catch {
+      // If URL parsing fails, remove _t parameter manually
+      return url.split('#')[0].replace(/[?&]_t=\d+/g, '').replace(/\?$/, '');
+    }
+  };
+
+  const handleEditWithAI = async (userInstruction: string): Promise<string | void> => {
+    // Always use the latest edited resume URL (editedResumeUrl takes precedence over original)
+    // This ensures we're always editing the most recent version
+    const rawResumeUrl = editedResumeUrl || data?.gcs_url;
+    if (!rawResumeUrl) {
+      throw new Error("No resume URL available. Please generate a resume first.");
+    }
+
+    // Clean the URL to remove any cache-busting parameters before sending to backend
+    const resumeUrl = cleanResumeUrl(rawResumeUrl);
+
+    console.log('Sending edit request:', {
+      cleanedUrl: resumeUrl,
+      rawUrl: rawResumeUrl,
+      editedResumeUrl: editedResumeUrl,
+      originalGcsUrl: data?.gcs_url
+    });
+
+    setIsEditing(true);
+    try {
+      const response = await resumeService.editResume({
+        resume_url: resumeUrl,
+        user_instruction: userInstruction,
+      });
+      
+      console.log("Edit resume API response:", response);
+      console.log("Response type:", typeof response);
+      console.log("Response keys:", response ? Object.keys(response) : "null/undefined");
+      
+      // Check if response has gcs_url (success case) - prioritize this check
+      const responseAny = response as unknown as Record<string, unknown>;
+      const hasGcsUrl = 'gcs_url' in responseAny && typeof responseAny.gcs_url === 'string' && responseAny.gcs_url;
+      
+      // If we have gcs_url, it's a success - return it immediately
+      if (hasGcsUrl) {
+        const updatedUrl = responseAny.gcs_url as string;
+        setEditedResumeUrl(updatedUrl);
+        return updatedUrl;
+      }
+      
+      // No gcs_url - check for error indicators
+      // When postWithoutTokenFormData catches an error, it returns { status_code, message, ... }
+      // Check for status_code first (most reliable indicator from API client)
+      const statusCode = ('status_code' in responseAny && typeof responseAny.status_code === 'number') 
+                        ? responseAny.status_code 
+                        : null;
+      
+      // If status_code exists and is >= 400, it's definitely an error
+      if (statusCode !== null && statusCode >= 400) {
+        // Extract error message - prioritize message, then error, then details
+        let errorMessage = 'Failed to edit resume. Please try again.';
+        if (responseAny.message && typeof responseAny.message === 'string') {
+          errorMessage = responseAny.message;
+        } else if (responseAny.error && typeof responseAny.error === 'string') {
+          errorMessage = responseAny.error;
+        } else if (responseAny.details && typeof responseAny.details === 'string') {
+          errorMessage = responseAny.details;
+        }
+        throw new Error(errorMessage);
+      }
+      
+      // Check for error_code (API-level error) - must be non-zero number
+      if ('error_code' in responseAny && 
+          typeof responseAny.error_code === 'number' &&
+          responseAny.error_code !== 0) {
+        const errorMessage = (responseAny.error as string) || 
+                           (responseAny.message as string) || 
+                           (responseAny.data_error as string) ||
+                           'Failed to edit resume. Please try again.';
+        throw new Error(errorMessage);
+      }
+      
+      // Check for error field from proxy (when backend fails, proxy returns { error: "Backend API error", status: ... })
+      // Only treat as error if status field also indicates error (>= 400)
+      const proxyStatus = ('status' in responseAny && typeof responseAny.status === 'number') 
+                         ? responseAny.status 
+                         : null;
+      if (proxyStatus !== null && proxyStatus >= 400 && 'error' in responseAny) {
+        const errorMessage = (responseAny.error as string) || 
+                           (responseAny.message as string) || 
+                           (responseAny.details as string) ||
+                           'Failed to edit resume. Please try again.';
+        throw new Error(errorMessage);
+      }
+      
+      // No gcs_url and no error indicators - this shouldn't happen normally
+      throw new Error("The server response was missing the updated resume URL. Please try again.");
+    } catch (error: unknown) {
+      console.error("Edit error:", error);
+      
+      // Extract error details
+      let errorMessage = "Failed to edit resume. Please try again.";
+      if (error && typeof error === 'object') {
+        const apiError = error as { 
+          status_code?: number; 
+          message?: string; 
+          error_code?: number;
+          response?: { data?: { message?: string } } 
+        };
+        
+        // Re-throw with better error message
+        if (apiError.status_code && apiError.message) {
+          errorMessage = `Error ${apiError.status_code}: ${apiError.message}`;
+        } else if (apiError.response?.data?.message) {
+          errorMessage = apiError.response.data.message;
+        } else if (apiError.message) {
+          errorMessage = apiError.message;
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  // Get the current resume URL (edited or original)
+  const currentResumeUrl = editedResumeUrl || data?.gcs_url || "";
 
   return (
     <div className={styles.wizardContainer}>
       {/* Step Content */}
       <div className={styles.stepContent}>
-        {currentStep === 1 && (
-          <JobDescriptionStep
-            value={jobDescription}
-            onChange={setJobDescription}
+        {editMode === "ai" && currentResumeUrl ? (
+          <EditWithAIStep
+            downloadUrl={currentResumeUrl}
+            onBack={handleBackFromEdit}
+            onEdit={handleEditWithAI}
+            isEditing={isEditing}
+            onReset={handleReset}
           />
-        )}
-        {currentStep === 2 && (
-          <JobRolesStep
-            selectedRoles={selectedJobRoles}
-            onChange={setSelectedJobRoles}
-          />
-        )}
-        {currentStep === 3 && (
-          <ResumeUploadStep file={file} onChange={setFile} />
-        )}
-        {currentStep === 4 && <ProcessingStep progress={progress} />}
-        {currentStep === 5 && data?.gcs_url && (
-          <PreviewStep downloadUrl={data.gcs_url} onReset={handleReset} />
+        ) : (
+          <>
+            {currentStep === 1 && (
+              <JobDescriptionStep
+                value={jobDescription}
+                onChange={setJobDescription}
+              />
+            )}
+            {currentStep === 2 && (
+              <JobRolesStep
+                selectedRoles={selectedJobRoles}
+                onChange={setSelectedJobRoles}
+              />
+            )}
+            {currentStep === 3 && (
+              <ResumeUploadStep file={file} onChange={setFile} />
+            )}
+            {currentStep === 4 && <ProcessingStep progress={progress} />}
+            {currentStep === 5 && data?.gcs_url && (
+              <PreviewStep
+                downloadUrl={data.gcs_url}
+                onReset={handleReset}
+                onEditModeChange={handleEditModeChange}
+              />
+            )}
+          </>
         )}
       </div>
 
       {/* Navigation Buttons */}
-      <div className={styles.navigationContainer}>
-        {currentStep > 1 && currentStep < 4 && (
-          <button
-            className={styles.backButton}
-            onClick={handleBack}
-          >
-            <IoChevronBack />
-            Back
-          </button>
-        )}
+      {!editMode && (
+        <div className={styles.navigationContainer}>
+          {currentStep > 1 && currentStep < 4 && (
+            <button
+              className={styles.backButton}
+              onClick={handleBack}
+            >
+              <IoChevronBack />
+              Back
+            </button>
+          )}
 
-        <div className={styles.spacer} />
+          <div className={styles.spacer} />
 
-        {currentStep < 3 && (
-          <button
-            className={styles.nextButton}
-            onClick={handleNext}
-            disabled={!canProceedToNextStep()}
-          >
-            Next
-            <IoChevronForward />
-          </button>
-        )}
+          {currentStep < 3 && (
+            <button
+              className={styles.nextButton}
+              onClick={handleNext}
+              disabled={!canProceedToNextStep()}
+            >
+              Next
+              <IoChevronForward />
+            </button>
+          )}
 
-        {currentStep === 3 && (
-          <button
-            className={styles.generateButton}
-            onClick={handleGenerate}
-            disabled={!canProceedToNextStep() || loading}
-          >
-            <RxMagicWand />
-            Generate Resume
-          </button>
-        )}
-      </div>
+          {currentStep === 3 && (
+            <button
+              className={styles.generateButton}
+              onClick={handleGenerate}
+              disabled={!canProceedToNextStep() || loading}
+            >
+              <RxMagicWand />
+              Generate Resume
+            </button>
+          )}
+        </div>
+      )}
 
       <ErrorModal
         isOpen={errorModal.isOpen}
