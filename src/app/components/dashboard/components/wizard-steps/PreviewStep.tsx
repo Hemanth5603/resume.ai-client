@@ -2,14 +2,18 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { FaDownload, FaCheckCircle } from "react-icons/fa";
+import { RxMagicWand } from "react-icons/rx";
 import styles from "../../styles/wizard-steps/PreviewStep.module.css";
+
+export type EditMode = "ai" | null;
 
 interface PreviewStepProps {
   downloadUrl: string;
   onReset: () => void;
+  onEditModeChange?: (mode: EditMode) => void;
 }
 
-export default function PreviewStep({ downloadUrl, onReset }: PreviewStepProps) {
+export default function PreviewStep({ downloadUrl, onEditModeChange }: PreviewStepProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [iframeError, setIframeError] = useState(false);
 
@@ -61,15 +65,16 @@ export default function PreviewStep({ downloadUrl, onReset }: PreviewStepProps) 
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      // Wait a bit then reset to home
-      setTimeout(() => {
-        onReset();
-      }, 1000);
     } catch (error) {
       console.error("Download error:", error);
     } finally {
       setTimeout(() => setIsDownloading(false), 1000);
+    }
+  };
+
+  const handleEditWithAI = () => {
+    if (onEditModeChange) {
+      onEditModeChange("ai");
     }
   };
 
@@ -152,6 +157,14 @@ export default function PreviewStep({ downloadUrl, onReset }: PreviewStepProps) 
         )}
 
         <div className={styles.actionButtons}>
+          <button
+            className={styles.editButton}
+            onClick={handleEditWithAI}
+          >
+            <RxMagicWand />
+            Edit with AI
+          </button>
+          
           <button
             className={styles.downloadButton}
             onClick={handleDownload}

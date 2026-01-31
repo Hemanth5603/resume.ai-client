@@ -8,6 +8,7 @@
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
+  background: transparent;
 }
 
 @keyframes fadeIn {
@@ -61,9 +62,10 @@
   background: #ffffff;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   max-width: 700px;
+  position: relative;
 }
 
 .previewHeader {
@@ -92,6 +94,7 @@
   height: 500px;
   background: #f9fafb;
   position: relative;
+  overflow: hidden;
 }
 
 .iframe {
@@ -163,6 +166,8 @@
 .actionButtons {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
   padding: 1.25rem 1.5rem;
   border-top: 2px solid #e5e7eb;
 }
@@ -195,6 +200,31 @@
 .downloadButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.editButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  font-family: var(--font-poppins), sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 2px solid #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  box-shadow: 3px 3px 0px #1a1a1a;
+}
+
+.editButton:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #1a1a1a;
 }
 
 @media (max-width: 768px) {
@@ -256,10 +286,19 @@
 
   .actionButtons {
     padding: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   .downloadButton {
     padding: 0.75rem 1.5rem;
     font-size: 0.85rem;
+    width: 100%;
+  }
+
+  .editButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.85rem;
+    width: 100%;
   }
 }

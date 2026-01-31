@@ -1,7 +1,8 @@
 .wizardContainer {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   position: relative;
   min-height: calc(100vh - 80px);
   display: flex;
@@ -15,6 +16,9 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 1.5rem;
+  min-height: 0;
+  overflow: hidden;
+  background: transparent;
 }
 
 .stepContent::-webkit-scrollbar {
@@ -79,13 +83,14 @@
 }
 
 .nextButton {
-  background: #1a1a1a;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: #ffffff;
+  border-color: #2563eb;
 }
 
 .nextButton:hover:not(:disabled) {
-  background: #000000;
-  box-shadow: 2px 2px 0px #000000;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 2px 2px 0px #2563eb;
   transform: translate(2px, 2px);
 }
 
@@ -99,13 +104,14 @@
 }
 
 .generateButton {
-  background: #1a1a1a;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: #ffffff;
+  border-color: #2563eb;
 }
 
 .generateButton:hover:not(:disabled) {
-  background: #000000;
-  box-shadow: 2px 2px 0px #000000;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 2px 2px 0px #2563eb;
   transform: translate(2px, 2px);
 }
 
