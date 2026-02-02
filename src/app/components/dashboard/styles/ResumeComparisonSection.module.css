@@ -1,0 +1,208 @@
+.section {
+  width: 100%;
+  background-color: transparent;
+  padding-top: 6rem;
+  padding-bottom: 8rem;
+  margin-bottom: 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.comparisonCard {
+  border: 1px solid #e5e7eb; /* gray-200 - matching FeaturesSection */
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+  padding: 3rem 2rem;
+  position: relative;
+  transition: all 300ms ease;
+  overflow: hidden;
+}
+
+.comparisonCard:hover {
+  border-color: black;
+}
+
+.comparisonCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.03) 0%,
+    rgba(139, 92, 246, 0.03) 50%,
+    rgba(59, 130, 246, 0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cardHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: black;
+  font-family: 'Instrument Serif Local', 'Instrument Serif', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1%;
+}
+
+.subtitle {
+  color: #6b7280; /* gray-500 */
+  font-size: 1rem;
+  line-height: 1.625;
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.imageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imageWrapper {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.imageLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280; /* gray-500 */
+  margin-bottom: 0.75rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.imageBorder {
+  border: 1px solid #e5e7eb; /* gray-200 - matching card border */
+  background-color: white;
+  padding: 0.5rem;
+  transition: all 300ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.comparisonCard:hover .imageBorder {
+  border-color: black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.resumeImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  transition: transform 300ms ease;
+}
+
+.comparisonCard:hover .resumeImage {
+  transform: scale(1.02);
+}
+
+.arrowContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.arrow {
+  color: #6b7280; /* gray-500 */
+  transition: all 300ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comparisonCard:hover .arrow {
+  color: black;
+  transform: translateX(5px);
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .comparisonCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .cardHeader {
+    margin-bottom: 2rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .arrowContainer {
+    transform: rotate(90deg);
+    padding: 0.5rem;
+  }
+
+  .arrow {
+    transform: rotate(0deg);
+  }
+
+  .comparisonCard:hover .arrow {
+    transform: rotate(0deg) translateY(5px);
+  }
+
+  .imageWrapper {
+    max-width: 100%;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .comparisonGrid {
+    gap: 1.5rem;
+  }
+
+  .imageWrapper {
+    max-width: 350px;
+  }
+}

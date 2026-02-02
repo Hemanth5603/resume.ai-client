@@ -2,6 +2,8 @@
 
 import styles from "../styles/HeroSection.module.css";
 import FeaturesSection from "./FeaturesSection";
+import ResumeComparisonSection from "./ResumeComparisonSection";
+import ProcessFlowSection from "./ProcessFlowSection";
 
 const HeroSection = () => {
 
@@ -14,6 +16,9 @@ const HeroSection = () => {
       WITH SURGICAL PRECISION
       </h1>
       <FeaturesSection />
+      <ProcessFlowSection />
+      <ResumeComparisonSection />
+      
     </div>
     </>
   )

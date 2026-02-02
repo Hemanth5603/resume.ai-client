@@ -2,9 +2,11 @@
     text-align: center;
     padding: 4rem 2rem 2rem;
     max-width: 1200px;
-    height: 100vh;
+    min-height: 100vh;
     justify-content: center;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
   
   .heroTitle {
