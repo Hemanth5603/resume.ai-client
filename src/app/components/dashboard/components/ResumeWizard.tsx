@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { IoChevronForward, IoChevronBack } from "react-icons/io5";
 import { RxMagicWand } from "react-icons/rx";
 import styles from "../styles/ResumeWizard.module.css";
@@ -16,6 +17,7 @@ import type { ApiError } from "@/lib/api/types/resume.types";
 import resumeService from "@/lib/api/services/resumeService";
 
 export default function ResumeWizard() {
+  const { getToken } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [jobDescription, setJobDescription] = useState("");
   const [selectedJobRoles, setSelectedJobRoles] = useState<string[]>([]);
@@ -219,10 +221,16 @@ export default function ResumeWizard() {
 
     setIsEditing(true);
     try {
-      const response = await resumeService.editResume({
-        resume_url: resumeUrl,
-        user_instruction: userInstruction,
-      });
+      // Get authentication token
+      const token = await getToken();
+      
+      const response = await resumeService.editResume(
+        {
+          resume_url: resumeUrl,
+          user_instruction: userInstruction,
+        },
+        token || undefined
+      );
       
       console.log("Edit resume API response:", response);
       console.log("Response type:", typeof response);

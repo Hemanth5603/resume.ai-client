@@ -48,6 +48,20 @@ class ApiClient {
         return data;
       }],
     });
+    
+    // Add request interceptor to handle FormData properly
+    // When FormData is detected, remove Content-Type header so axios can set it automatically
+    this.axiosInstance.interceptors.request.use((config) => {
+      // If the data is FormData, ensure Content-Type is not set manually
+      if (config.data instanceof FormData) {
+        // Delete Content-Type from headers - axios will set it automatically with boundary
+        if (config.headers) {
+          delete config.headers['Content-Type'];
+          delete config.headers['content-type'];
+        }
+      }
+      return config;
+    });
   }
 
   private handleError(error: AxiosError): ApiErrorResponse {
@@ -215,15 +229,39 @@ class ApiClient {
     config: AxiosRequestConfig = {}
   ): Promise<T> {
     try {
-      // Axios automatically sets the correct Content-Type for FormData
-      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, formData, {
+      // When FormData is passed, axios automatically sets Content-Type with boundary
+      // Build headers object without Content-Type so axios can set it automatically
+      const requestHeaders: Record<string, string> = {
+        ...createAuthHeaders(token),
+      };
+      
+      // Merge any additional headers from config, but exclude Content-Type
+      if (config.headers) {
+        Object.keys(config.headers).forEach((key) => {
+          const lowerKey = key.toLowerCase();
+          if (lowerKey !== 'content-type') {
+            requestHeaders[key] = config.headers![key] as string;
+          }
+        });
+      }
+      
+      // Create a new config object, ensuring Content-Type is not set
+      // Axios will detect FormData and automatically set Content-Type with boundary
+      const requestConfig: AxiosRequestConfig = {
         ...config,
-        headers: {
-          ...HEADERS.FORM_DATA,
-          ...config.headers,
-          ...createAuthHeaders(token),
-        },
-      });
+        headers: requestHeaders,
+        // Override transformRequest to ensure Content-Type is not set for FormData
+        transformRequest: [(data) => {
+          // If data is FormData, return it as-is (axios will handle Content-Type)
+          if (data instanceof FormData) {
+            return data;
+          }
+          // For other data types, use default transform
+          return data;
+        }],
+      };
+      
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, formData, requestConfig);
       
       return this.checkResponseForErrors(response.data);
     } catch (error) {
@@ -237,13 +275,37 @@ class ApiClient {
     config: AxiosRequestConfig = {}
   ): Promise<T> {
     try {
-      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, formData, {
+      // When FormData is passed, axios automatically sets Content-Type with boundary
+      // Build headers object without Content-Type so axios can set it automatically
+      const requestHeaders: Record<string, string> = {};
+      
+      // Merge any additional headers from config, but exclude Content-Type
+      if (config.headers) {
+        Object.keys(config.headers).forEach((key) => {
+          const lowerKey = key.toLowerCase();
+          if (lowerKey !== 'content-type') {
+            requestHeaders[key] = config.headers![key] as string;
+          }
+        });
+      }
+      
+      // Create a new config object, ensuring Content-Type is not set
+      // Axios will detect FormData and automatically set Content-Type with boundary
+      const requestConfig: AxiosRequestConfig = {
         ...config,
-        headers: {
-          ...HEADERS.FORM_DATA,
-          ...config.headers,
-        },
-      });
+        headers: requestHeaders,
+        // Override transformRequest to ensure Content-Type is not set for FormData
+        transformRequest: [(data) => {
+          // If data is FormData, return it as-is (axios will handle Content-Type)
+          if (data instanceof FormData) {
+            return data;
+          }
+          // For other data types, use default transform
+          return data;
+        }],
+      };
+      
+      const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, formData, requestConfig);
       
       return this.checkResponseForErrors(response.data);
     } catch (error) {
