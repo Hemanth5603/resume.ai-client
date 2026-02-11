@@ -25,11 +25,6 @@ class ResumeService {
     // Depending on API expectation, you might need to adjust this
     formData.append("related_jobs", JSON.stringify(request.related_jobs));
 
-    // If the API expects individual items, use this instead:
-    // request.job_roles.forEach(role => {
-    //     formData.append('job_roles', role);
-    // });
-
     try {
       if (token) {
         return await apiClient.postWithTokenFormData(
